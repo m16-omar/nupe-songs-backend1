@@ -1,0 +1,575 @@
+{% extends "unfold/layouts/base.html" %}
+
+{% load i18n unfold %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-6 pb-16 overflow-y-auto h-[calc(100vh-80px)] pr-2">
+    <!-- Header with Date Filters & Action -->
+    <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+            <h1 class="text-2xl lg:text-3xl font-semibold tracking-tight text-gray-800 dark:text-white">Welcome back, Admin! 👋</h1>
+            <p class="text-sm text-gray-500 mt-1">Here's what's happening with your music platform today.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <button class="h-10 px-4 rounded-lg border border-gray-200 dark:border-base-800 bg-white dark:bg-base-900 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2 hover:bg-gray-50 transition-colors">
+                <span class="material-symbols-outlined text-base">calendar_month</span>
+                <span>May 12 – May 18, 2024</span>
+                <span class="material-symbols-outlined text-xs text-gray-400">expand_more</span>
+            </button>
+            <button class="h-10 px-4 rounded-lg bg-[#6c50e9] text-white text-xs font-medium flex items-center gap-2 hover:bg-[#573ecf] transition-colors shadow-sm">
+                <span class="material-symbols-outlined text-base">download</span>
+                <span>Export Report</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Cards Row (5 Columns) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+        <!-- Card 1: Total Users (Purple) -->
+        <div class="bg-white dark:bg-base-900 p-5 rounded-2xl border border-gray-100 dark:border-base-800 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-start justify-between">
+                <div>
+                    <div class="text-xs text-gray-400 font-medium">Total Users</div>
+                    <div class="text-2xl font-semibold mt-1 tracking-tight text-gray-800 dark:text-white">{{ total_users_str }}</div>
+                </div>
+                <div class="h-10 w-10 rounded-xl flex items-center justify-center bg-[#6c50e9]/10 text-[#6c50e9]">
+                    <span class="material-symbols-outlined text-lg leading-none">group</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-1 text-xs mt-3">
+                <span class="text-[#6c50e9] font-semibold">↑ +12.5%</span>
+                <span class="text-gray-400">vs last 7 days</span>
+            </div>
+            <div class="h-10 -mx-1 -mb-1 mt-3 overflow-hidden">
+                <svg class="w-full h-full" viewBox="0 0 100 20" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="grad-purple-spark" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#6c50e9" stop-opacity="0.25"/>
+                            <stop offset="100%" stop-color="#6c50e9" stop-opacity="0.0"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M0 15 C 20 18, 40 10, 60 14 C 80 17, 90 8, 100 5 L 100 20 L 0 20 Z" fill="url(#grad-purple-spark)" />
+                    <path d="M0 15 C 20 18, 40 10, 60 14 C 80 17, 90 8, 100 5" fill="none" stroke="#6c50e9" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Card 2: Total Songs (Green) -->
+        <div class="bg-white dark:bg-base-900 p-5 rounded-2xl border border-gray-100 dark:border-base-800 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-start justify-between">
+                <div>
+                    <div class="text-xs text-gray-400 font-medium">Total Songs</div>
+                    <div class="text-2xl font-semibold mt-1 tracking-tight text-gray-800 dark:text-white">{{ total_songs_str }}</div>
+                </div>
+                <div class="h-10 w-10 rounded-xl flex items-center justify-center bg-[#10B981]/10 text-[#10B981]">
+                    <span class="material-symbols-outlined text-lg leading-none">music_note</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-1 text-xs mt-3">
+                <span class="text-[#10B981] font-semibold">↑ +7.3%</span>
+                <span class="text-gray-400">vs last 7 days</span>
+            </div>
+            <div class="h-10 -mx-1 -mb-1 mt-3 overflow-hidden">
+                <svg class="w-full h-full" viewBox="0 0 100 20" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="grad-green-spark" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#10B981" stop-opacity="0.25"/>
+                            <stop offset="100%" stop-color="#10B981" stop-opacity="0.0"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M0 16 C 20 14, 40 18, 60 12 C 80 8, 90 15, 100 6 L 100 20 L 0 20 Z" fill="url(#grad-green-spark)" />
+                    <path d="M0 16 C 20 14, 40 18, 60 12 C 80 8, 90 15, 100 6" fill="none" stroke="#10B981" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Card 3: Total Streams (Blue) -->
+        <div class="bg-white dark:bg-base-900 p-5 rounded-2xl border border-gray-100 dark:border-base-800 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-start justify-between">
+                <div>
+                    <div class="text-xs text-gray-400 font-medium">Total Streams</div>
+                    <div class="text-2xl font-semibold mt-1 tracking-tight text-gray-800 dark:text-white">{{ total_streams_str }}</div>
+                </div>
+                <div class="h-10 w-10 rounded-xl flex items-center justify-center bg-[#3B82F6]/10 text-[#3B82F6]">
+                    <span class="material-symbols-outlined text-lg leading-none">play_arrow</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-1 text-xs mt-3">
+                <span class="text-[#3B82F6] font-semibold">↑ +15.8%</span>
+                <span class="text-gray-400">vs last 7 days</span>
+            </div>
+            <div class="h-10 -mx-1 -mb-1 mt-3 overflow-hidden">
+                <svg class="w-full h-full" viewBox="0 0 100 20" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="grad-blue-spark" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.25"/>
+                            <stop offset="100%" stop-color="#3B82F6" stop-opacity="0.0"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M0 14 C 20 16, 40 12, 60 17 C 80 15, 90 9, 100 4 L 100 20 L 0 20 Z" fill="url(#grad-blue-spark)" />
+                    <path d="M0 14 C 20 16, 40 12, 60 17 C 80 15, 90 9, 100 4" fill="none" stroke="#3B82F6" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Card 4: Downloads (Orange) -->
+        <div class="bg-white dark:bg-base-900 p-5 rounded-2xl border border-gray-100 dark:border-base-800 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-start justify-between">
+                <div>
+                    <div class="text-xs text-gray-400 font-medium">Downloads</div>
+                    <div class="text-2xl font-semibold mt-1 tracking-tight text-gray-800 dark:text-white">{{ downloads_str }}</div>
+                </div>
+                <div class="h-10 w-10 rounded-xl flex items-center justify-center bg-[#F97316]/10 text-[#F97316]">
+                    <span class="material-symbols-outlined text-lg leading-none">download</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-1 text-xs mt-3">
+                <span class="text-[#F97316] font-semibold">↑ +18.4%</span>
+                <span class="text-gray-400">vs last 7 days</span>
+            </div>
+            <div class="h-10 -mx-1 -mb-1 mt-3 overflow-hidden">
+                <svg class="w-full h-full" viewBox="0 0 100 20" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="grad-orange-spark" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#F97316" stop-opacity="0.25"/>
+                            <stop offset="100%" stop-color="#F97316" stop-opacity="0.0"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M0 17 C 20 14, 40 16, 60 10 C 80 12, 90 7, 100 3 L 100 20 L 0 20 Z" fill="url(#grad-orange-spark)" />
+                    <path d="M0 17 C 20 14, 40 16, 60 10 C 80 12, 90 7, 100 3" fill="none" stroke="#F97316" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Card 5: Revenue (Pink) -->
+        <div class="bg-white dark:bg-base-900 p-5 rounded-2xl border border-gray-100 dark:border-base-800 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-start justify-between">
+                <div>
+                    <div class="text-xs text-gray-400 font-medium">Revenue</div>
+                    <div class="text-2xl font-semibold mt-1 tracking-tight text-gray-800 dark:text-white">{{ revenue_str }}</div>
+                </div>
+                <div class="h-10 w-10 rounded-xl flex items-center justify-center bg-[#fc4a93]/10 text-[#fc4a93]">
+                    <span class="material-symbols-outlined text-lg leading-none">attach_money</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-1 text-xs mt-3">
+                <span class="text-[#fc4a93] font-semibold">↑ +20.6%</span>
+                <span class="text-gray-400">vs last 7 days</span>
+            </div>
+            <div class="h-10 -mx-1 -mb-1 mt-3 overflow-hidden">
+                <svg class="w-full h-full" viewBox="0 0 100 20" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="grad-pink-spark" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#fc4a93" stop-opacity="0.25"/>
+                            <stop offset="100%" stop-color="#fc4a93" stop-opacity="0.0"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M0 15 C 20 18, 40 12, 60 16 C 80 10, 90 14, 100 5 L 100 20 L 0 20 Z" fill="url(#grad-pink-spark)" />
+                    <path d="M0 15 C 20 18, 40 12, 60 16 C 80 10, 90 14, 100 5" fill="none" stroke="#fc4a93" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Charts & Top Songs Section -->
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+        <!-- Streaming Overview Chart (Spans 2 columns) -->
+        <script>
+        function streamingChartComponent() {
+            return {
+                chartInstance: null,
+                labels: {{ chart_labels|safe }},
+                streams: {{ streams_data|safe }},
+                listeners: {{ listeners_data|safe }},
+                initChart() {
+                    if (typeof Chart === 'undefined') {
+                        const script = document.createElement('script');
+                        script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+                        script.onload = () => this.renderChart();
+                        document.head.appendChild(script);
+                    } else {
+                        this.renderChart();
+                    }
+                },
+                renderChart() {
+                    const ctx = this.$refs.canvas.getContext('2d');
+                    this.chartInstance = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: this.labels,
+                            datasets: [
+                                {
+                                    label: 'Streams',
+                                    data: this.streams,
+                                    borderColor: '#6c50e9',
+                                    backgroundColor: 'transparent',
+                                    borderWidth: 2.5,
+                                    fill: false,
+                                    tension: 0.4, 
+                                    pointRadius: 0,
+                                    pointHoverRadius: 6
+                                },
+                                {
+                                    label: 'Listeners',
+                                    data: this.listeners,
+                                    borderColor: '#3B82F6',
+                                    backgroundColor: 'transparent',
+                                    borderWidth: 2.5,
+                                    fill: false,
+                                    tension: 0.4,
+                                    pointRadius: 0,
+                                    pointHoverRadius: 6
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: 'rgba(31, 41, 55, 0.9)',
+                                    titleColor: '#fff',
+                                    bodyColor: '#fff',
+                                    padding: 12,
+                                    cornerRadius: 8,
+                                    displayColors: false
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    grid: { display: false, drawBorder: false },
+                                    ticks: { color: '#9ca3af', font: { size: 11, weight: '500' } }
+                                },
+                                y: {
+                                    grid: {
+                                        color: 'rgba(156, 163, 175, 0.1)',
+                                        borderDash: [3, 3],
+                                        drawBorder: false
+                                    },
+                                    ticks: {
+                                        color: '#9ca3af',
+                                        font: { size: 11 },
+                                        padding: 10,
+                                        callback: function(value) { return (value / 1000) + 'K'; }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        </script>
+
+        <div x-data="streamingChartComponent()" x-init="initChart()" class="xl:col-span-2 rounded-2xl border border-gray-100 dark:border-base-800 bg-white dark:bg-base-900 p-5 flex flex-col justify-between">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <h3 class="font-semibold text-gray-800 dark:text-white">Streaming Overview</h3>
+                    <p class="text-xs text-gray-400">Streams and listeners over time</p>
+                </div>
+                <button class="text-[10px] uppercase font-bold text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">Options</button>
+            </div>
+            
+            <div class="flex items-center gap-4 text-xs text-gray-400 mb-6">
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#6c50e9] block"></span> Streams</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 block"></span> Listeners</span>
+            </div>
+
+            <div class="h-64 relative w-full">
+                <canvas x-ref="canvas"></canvas>
+            </div>
+        </div>
+
+        <!-- Top Songs (Spans 1 column) -->
+        <div class="rounded-2xl border border-gray-100 dark:border-base-800 bg-white dark:bg-base-900 p-5 flex flex-col justify-between">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <h3 class="font-semibold text-gray-800 dark:text-white">Top Songs</h3>
+                    <p class="text-xs text-gray-400 mt-0.5">Most streamed songs</p>
+                </div>
+                <a href="{% url 'admin:api_song_changelist' %}" class="text-xs font-medium text-[#6c50e9] hover:underline">View all</a>
+            </div>
+
+            <ul class="space-y-3 flex-1 flex flex-col justify-center">
+                {% for song in top_songs %}
+                <li class="flex items-center gap-3">
+                    <span class="text-xs w-4 text-gray-400 font-medium">{{ forloop.counter }}</span>
+                    {% if song.artwork %}
+                    <img src="{{ song.artwork }}" class="h-8 w-8 rounded-md object-cover flex-shrink-0" alt="Artwork">
+                    {% else %}
+                    <div class="h-8 w-8 rounded-md flex-shrink-0" style="background: {{ song.color }}"></div>
+                    {% endif %}
+                    <div class="flex-1 min-w-0">
+                        <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 truncate">{{ song.title }}</div>
+                        <div class="text-xs text-gray-400 truncate">{{ song.artist }}</div>
+                    </div>
+                    <span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-gray-50 dark:bg-base-800 text-gray-600 dark:text-gray-400 border border-gray-100 dark:border-base-750">
+                        {{ song.plays }}
+                    </span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- User Growth (Full Width Chart) -->
+    <script>
+    function userGrowthChartComponent() {
+        return {
+            chartInstance: null,
+            labels: {{ chart_labels|safe }},
+            growthData: {{ user_growth_data|safe }},
+            initChart() {
+                if (typeof Chart === 'undefined') {
+                    const script = document.createElement('script');
+                    script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+                    script.onload = () => this.renderChart();
+                    document.head.appendChild(script);
+                } else {
+                    this.renderChart();
+                }
+            },
+            renderChart() {
+                const ctx = this.$refs.canvas.getContext('2d');
+                const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+                gradient.addColorStop(0, '#a78bfa'); 
+                gradient.addColorStop(1, '#6c50e9');
+
+                this.chartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: this.labels,
+                        datasets: [{
+                            label: 'New Users',
+                            data: this.growthData,
+                            backgroundColor: gradient,
+                            borderRadius: 6,
+                            barThickness: 28,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false, drawBorder: false },
+                                ticks: { color: '#9ca3af', font: { size: 11, weight: '500' } }
+                            },
+                            y: {
+                                grid: {
+                                    color: 'rgba(156, 163, 175, 0.1)',
+                                    borderDash: [3, 3],
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    color: '#9ca3af',
+                                    font: { size: 11 },
+                                    padding: 10
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    }
+    </script>
+    <div x-data="userGrowthChartComponent()" x-init="initChart()" class="rounded-2xl border border-gray-100 dark:border-base-800 bg-white dark:bg-base-900 p-5 flex flex-col justify-between">
+        <div class="flex items-start justify-between mb-4">
+            <div>
+                <h3 class="font-semibold text-gray-800 dark:text-white">User Growth</h3>
+                <p class="text-xs text-gray-400 mt-0.5">New users over time</p>
+            </div>
+            <button class="text-[10px] uppercase font-bold text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">Options</button>
+        </div>
+        <div class="h-56 relative w-full mt-2">
+            <canvas x-ref="canvas"></canvas>
+        </div>
+    </div>
+
+    <!-- Recent Songs & Recent Users Tables -->
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <!-- Recent Songs Table -->
+        <div class="rounded-2xl border border-gray-100 dark:border-base-800 bg-white dark:bg-base-900 overflow-hidden flex flex-col justify-between">
+            <div class="flex items-center justify-between p-5 pb-3">
+                <div>
+                    <h3 class="font-semibold text-gray-800 dark:text-white">Recent Songs</h3>
+                    <p class="text-xs text-gray-400 mt-0.5">Latest added songs</p>
+                </div>
+                <a href="{% url 'admin:api_song_changelist' %}" class="text-xs font-medium text-[#6c50e9] hover:underline">View all</a>
+            </div>
+
+            <div class="overflow-x-auto w-full">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="border-y border-gray-100 dark:border-base-800 bg-gray-50/50 dark:bg-base-950/20 text-gray-400 uppercase font-semibold text-[10px]">
+                            <th class="py-2.5 px-5 font-semibold">Song</th>
+                            <th class="py-2.5 px-3 font-semibold">Artist</th>
+                            <th class="py-2.5 px-3 font-semibold">Album</th>
+                            <th class="py-2.5 px-3 font-semibold">Added On</th>
+                            <th class="py-2.5 px-3 font-semibold text-right">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50 dark:divide-base-800 text-sm">
+                        {% for song in recent_songs %}
+                        <tr class="hover:bg-gray-50/50 dark:hover:bg-base-950/10 transition-colors">
+                            <td class="py-2.5 px-5 flex items-center gap-2.5">
+                                {% if song.artwork %}
+                                <img src="{{ song.artwork }}" class="h-8 w-8 rounded-md object-cover flex-shrink-0" alt="Song thumb">
+                                {% else %}
+                                <div class="h-8 w-8 rounded-md bg-gradient-to-br from-purple-100 to-indigo-200 dark:from-purple-900/30 dark:to-indigo-950/30 flex-shrink-0"></div>
+                                {% endif %}
+                                <span class="font-semibold text-gray-700 dark:text-gray-300">{{ song.title }}</span>
+                            </td>
+                            <td class="py-2.5 px-3 text-gray-500 dark:text-gray-400 font-medium">
+                                {{ song.artist }}
+                            </td>
+                            <td class="py-2.5 px-3 text-gray-500 dark:text-gray-400 font-medium">
+                                {{ song.album }}
+                            </td>
+                            <td class="py-2.5 px-3 text-gray-400 font-medium whitespace-nowrap">
+                                {{ song.date }}
+                            </td>
+                            <td class="py-2.5 px-3 text-right">
+                                <span class="px-2 py-0.5 rounded-full font-bold text-[9px] uppercase tracking-wider {{ song.status_class }}">
+                                    {{ song.status }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Recent Users Table -->
+        <div class="rounded-2xl border border-gray-100 dark:border-base-800 bg-white dark:bg-base-900 overflow-hidden flex flex-col justify-between">
+            <div class="flex items-center justify-between p-5 pb-3">
+                <div>
+                    <h3 class="font-semibold text-gray-800 dark:text-white">Recent Users</h3>
+                    <p class="text-xs text-gray-400 mt-0.5">Latest registered users</p>
+                </div>
+                <a href="{% url 'admin:api_customuser_changelist' %}" class="text-xs font-medium text-[#6c50e9] hover:underline">View all</a>
+            </div>
+
+            <div class="overflow-x-auto w-full">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="border-y border-gray-100 dark:border-base-800 bg-gray-50/50 dark:bg-base-950/20 text-gray-400 uppercase font-semibold text-[10px]">
+                            <th class="py-2.5 px-5 font-semibold">User</th>
+                            <th class="py-2.5 px-3 font-semibold">Email</th>
+                            <th class="py-2.5 px-3 font-semibold">Joined On</th>
+                            <th class="w-8 py-2.5"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50 dark:divide-base-800 text-sm">
+                        {% for user in recent_users %}
+                        <tr class="hover:bg-gray-50/50 dark:hover:bg-base-950/10 transition-colors">
+                            <td class="py-2.5 px-5 flex items-center gap-2.5">
+                                <div class="h-8 w-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white shadow-sm flex-shrink-0" style="background: {{ user.color }}">
+                                    {{ user.initials }}
+                                </div>
+                                <span class="font-semibold text-gray-700 dark:text-gray-300">{{ user.name }}</span>
+                            </td>
+                            <td class="py-2.5 px-3 text-gray-500 dark:text-gray-400 font-medium">
+                                {{ user.email }}
+                            </td>
+                            <td class="py-2.5 px-3 text-gray-400 font-medium whitespace-nowrap">
+                                {{ user.date }}
+                            </td>
+                            <td class="py-2.5 px-3 text-right">
+                                <button class="p-1 rounded-md text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors">
+                                    <span class="material-symbols-outlined text-sm leading-none">chevron_right</span>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom progress cards row (4 columns) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <!-- Card 1: Active Subscriptions -->
+        <div class="bg-white dark:bg-base-900 p-5 rounded-2xl border border-gray-100 dark:border-base-800 flex flex-col justify-between">
+            <div class="flex items-start justify-between">
+                <div>
+                    <div class="text-xs text-gray-400 font-medium">Active Subscriptions</div>
+                    <div class="mt-2 flex items-baseline gap-2">
+                        <span class="text-2xl font-semibold tracking-tight text-gray-800 dark:text-white">{{ active_subs_str }}</span>
+                        <span class="text-xs font-semibold text-[#6c50e9]">↑ +14.3%</span>
+                    </div>
+                </div>
+                <div class="h-10 w-10 rounded-xl flex items-center justify-center bg-[#6c50e9]/10 text-[#6c50e9]">
+                    <span class="material-symbols-outlined text-lg leading-none">card_membership</span>
+                </div>
+            </div>
+            <div class="mt-4 h-1.5 rounded-full bg-gray-100 dark:bg-base-800 overflow-hidden">
+                <div class="h-full rounded-full bg-[#6c50e9]" style="width: 72%"></div>
+            </div>
+        </div>
+
+        <!-- Card 2: Free Users -->
+        <div class="bg-white dark:bg-base-900 p-5 rounded-2xl border border-gray-100 dark:border-base-800 flex flex-col justify-between">
+            <div class="flex items-start justify-between">
+                <div>
+                    <div class="text-xs text-gray-400 font-medium">Free Users</div>
+                    <div class="mt-2 flex items-baseline gap-2">
+                        <span class="text-2xl font-semibold tracking-tight text-gray-800 dark:text-white">{{ free_users_str }}</span>
+                        <span class="text-xs font-semibold text-blue-500">↑ +9.8%</span>
+                    </div>
+                </div>
+                <div class="h-10 w-10 rounded-xl flex items-center justify-center bg-blue-500/10 text-blue-500">
+                    <span class="material-symbols-outlined text-lg leading-none">person</span>
+                </div>
+            </div>
+            <div class="mt-4 h-1.5 rounded-full bg-gray-100 dark:bg-base-800 overflow-hidden">
+                <div class="h-full rounded-full bg-blue-500" style="width: 58%"></div>
+            </div>
+        </div>
+
+        <!-- Card 3: Storage Used -->
+        <div class="bg-white dark:bg-base-900 p-5 rounded-2xl border border-gray-100 dark:border-base-800 flex flex-col justify-between">
+            <div class="flex items-start justify-between">
+                <div>
+                    <div class="text-xs text-gray-400 font-medium">Storage Used</div>
+                    <div class="mt-2 flex items-baseline gap-2">
+                        <span class="text-2xl font-semibold tracking-tight text-gray-800 dark:text-white">{{ storage_used_str }}</span>
+                        <span class="text-xs text-gray-400">of 5 TB</span>
+                    </div>
+                </div>
+                <div class="h-10 w-10 rounded-xl flex items-center justify-center bg-[#10B981]/10 text-[#10B981]">
+                    <span class="material-symbols-outlined text-lg leading-none">cloud</span>
+                </div>
+            </div>
+            <div class="mt-4 h-1.5 rounded-full bg-gray-100 dark:bg-base-800 overflow-hidden">
+                <div class="h-full rounded-full bg-[#10B981]" style="width: 25%"></div>
+            </div>
+        </div>
+
+        <!-- Card 4: Server Status -->
+        <div class="bg-white dark:bg-base-900 p-5 rounded-2xl border border-gray-100 dark:border-base-800 flex flex-col justify-between">
+            <div class="flex items-start justify-between">
+                <div>
+                    <div class="text-xs text-gray-400 font-medium">Server Status</div>
+                    <div class="mt-2.5 flex items-center gap-2 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                        <span class="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse block"></span>
+                        <span>All Systems Operational</span>
+                    </div>
+                </div>
+                <div class="h-10 w-10 rounded-xl flex items-center justify-center bg-[#10B981]/10 text-[#10B981]">
+                    <span class="material-symbols-outlined text-lg leading-none">check_circle</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

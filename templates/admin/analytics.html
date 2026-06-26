@@ -1,0 +1,106 @@
+{% extends "unfold/layouts/base.html" %}
+{% load i18n unfold %}
+
+{% block content %}
+<div class="flex flex-col gap-6 pb-16 overflow-y-auto h-[calc(100vh-80px)] pr-2">
+    <div>
+        <h1 class="text-2xl font-semibold tracking-tight text-gray-800 dark:text-white">Platform Analytics</h1>
+        <p class="text-sm text-gray-500 mt-1">Deep-dive graphs of genre popularities, streaming metrics, and devices.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-2">
+        <!-- Genre Distribution -->
+        <div class="bg-white dark:bg-base-900 p-5 rounded-2xl border border-gray-100 dark:border-base-800 h-80 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div>
+                <h3 class="font-semibold text-gray-800 dark:text-white text-sm">Genre Streaming Share</h3>
+                <p class="text-xs text-gray-400 mt-0.5">Streams distribution by musical classifications</p>
+            </div>
+            <div class="flex-1 min-h-0 relative w-full mt-4 flex items-center justify-center">
+                <canvas id="genreChart" class="max-h-56"></canvas>
+            </div>
+        </div>
+
+        <!-- Device breakdown -->
+        <div class="bg-white dark:bg-base-900 p-5 rounded-2xl border border-gray-100 dark:border-base-800 h-80 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div>
+                <h3 class="font-semibold text-gray-800 dark:text-white text-sm">Listeners by Device</h3>
+                <p class="text-xs text-gray-400 mt-0.5">Active playback session clients</p>
+            </div>
+            <div class="flex-1 min-h-0 relative w-full mt-4 flex items-center justify-center">
+                <canvas id="deviceChart" class="max-h-56"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Genre Distribution Chart (Doughnut)
+    const genreCtx = document.getElementById('genreChart').getContext('2d');
+    new Chart(genreCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Traditional', 'Gospel', 'Afrobeats', 'Soul/RnB'],
+            datasets: [{
+                data: [42, 28, 18, 12],
+                backgroundColor: ['#6c50e9', '#10B981', '#3B82F6', '#fc4a93'],
+                borderWidth: 0,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        color: document.documentElement.classList.contains('dark') ? '#9ca3af' : '#4b5563',
+                        font: { size: 10, weight: '500' }
+                    }
+                }
+            }
+        }
+    });
+
+    // 2. Active Listeners by Device Chart (Polar Area)
+    const deviceCtx = document.getElementById('deviceChart').getContext('2d');
+    new Chart(deviceCtx, {
+        type: 'polarArea',
+        data: {
+            labels: ['Mobile iOS', 'Mobile Android', 'Web Browsers', 'Desktop Apps'],
+            datasets: [{
+                data: [6500, 8500, 3200, 1100],
+                backgroundColor: [
+                    'rgba(108, 80, 233, 0.7)',
+                    'rgba(16, 185, 129, 0.7)',
+                    'rgba(59, 130, 246, 0.7)',
+                    'rgba(252, 74, 147, 0.7)',
+                ],
+                borderColor: 'transparent',
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        color: document.documentElement.classList.contains('dark') ? '#9ca3af' : '#4b5563',
+                        font: { size: 10, weight: '500' }
+                    }
+                }
+            },
+            scales: {
+                r: {
+                    grid: { color: 'rgba(156, 163, 175, 0.1)' },
+                    angleLines: { color: 'rgba(156, 163, 175, 0.1)' },
+                    ticks: { display: false }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

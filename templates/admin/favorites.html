@@ -1,0 +1,48 @@
+{% extends "unfold/layouts/base.html" %}
+{% load i18n unfold %}
+
+{% block content %}
+<div class="flex flex-col gap-6 pb-16 overflow-y-auto h-[calc(100vh-80px)] pr-2">
+    <div>
+        <h1 class="text-2xl font-semibold tracking-tight text-gray-800 dark:text-white">Track Favorites</h1>
+        <p class="text-sm text-gray-500 mt-1">Review the popularity of songs by total like counts.</p>
+    </div>
+
+    {% if not songs %}
+    <div class="p-12 text-center text-gray-400 bg-white dark:bg-base-900 rounded-2xl border border-gray-100 dark:border-base-800 flex flex-col items-center justify-center">
+        <span class="material-symbols-outlined text-4xl mb-2 text-gray-300 dark:text-gray-600">favorite</span>
+        <p class="text-sm">No favorites recorded in user profiles yet.</p>
+    </div>
+    {% else %}
+    <div class="bg-white dark:bg-base-900 border border-gray-100 dark:border-base-800 rounded-2xl overflow-hidden shadow-sm">
+        <div class="overflow-x-auto w-full">
+            <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                    <tr class="border-b border-gray-100 dark:border-base-800 bg-gray-50/50 dark:bg-base-950/20 text-gray-400 uppercase font-semibold text-[10px] tracking-wider">
+                        <th class="py-3 px-6">Song Title</th>
+                        <th class="py-3 px-3">Artist</th>
+                        <th class="py-3 px-3">Album</th>
+                        <th class="py-3 px-6 text-right">Total Favorites</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50 dark:divide-base-800 text-sm">
+                    {% for song in songs %}
+                    <tr class="hover:bg-gray-50/50 dark:hover:bg-base-950/10 transition-colors">
+                        <td class="py-3.5 px-6 font-semibold text-gray-700 dark:text-gray-300">{{ song.title }}</td>
+                        <td class="py-3.5 px-3 text-gray-500 dark:text-gray-400 font-medium">{{ song.artist.name }}</td>
+                        <td class="py-3.5 px-3 text-gray-400 dark:text-gray-500 font-medium">
+                            {% if song.album %}{{ song.album.name }}{% else %}Single{% endif %}
+                        </td>
+                        <td class="py-3.5 px-6 text-right font-bold text-[#fc4a93] flex items-center justify-end gap-1.5 h-full">
+                            <span class="material-symbols-outlined text-sm leading-none mt-0.5">favorite</span>
+                            <span>{{ song.favorites_count }} likes</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

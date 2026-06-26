@@ -1,0 +1,101 @@
+/* Custom CSS to replica Lovable's Nupe Songs Admin Dashboard Design */
+
+/* Sidebar Background - Dark Slate Blue */
+aside {
+    background-color: #090f1c !important; /* Extremely dark blue */
+    border-right: 1px solid #182135 !important;
+}
+
+/* Sidebar Text and Icons */
+aside span, aside a, aside h3 {
+    color: #78879f !important;
+}
+
+aside a:hover {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+    color: #ffffff !important;
+}
+
+/* Sidebar Active Item Indicator - Highlight block background, no left border */
+aside a.active {
+    background-color: #6c50e9 !important; /* Primary Violet */
+    color: #ffffff !important;
+    border-left: none !important;
+    border-radius: 0.5rem !important; /* Rounder active state */
+}
+
+/* Main Background - Clean light slate grey */
+body.unfold {
+    background-color: #f9fafc !important;
+}
+
+/* Cards - White with subtle border */
+.bg-white {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid #f1f5f9 !important;
+    border-radius: 1rem !important;
+}
+
+/* Top Header */
+header {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+/* Stats Progress Bars and primary buttons */
+.bg-primary-500 {
+    background-color: #6c50e9 !important;
+}
+
+/* Custom Purple/Violet Accents */
+.text-primary-500 {
+    color: #6c50e9 !important;
+}
+
+/* Brand Color Variables */
+:root {
+    --brand-purple: #6c50e9;
+    --brand-green: #10B981;
+    --brand-blue: #3B82F6;
+    --brand-orange: #F97316;
+    --brand-pink: #fc4a93;
+}
+
+/* Fix missing Tailwind dark mode utilities in Unfold */
+:root[data-theme="dark"] .bg-white,
+html.dark .bg-white,
+body.dark .bg-white {
+    background-color: #0b111f !important;
+    border-color: #182135 !important;
+}
+
+:root[data-theme="dark"] .text-gray-800,
+html.dark .text-gray-800 {
+    color: #eef2f9 !important;
+}
+
+:root[data-theme="dark"] .text-gray-500,
+html.dark .text-gray-500 {
+    color: #78879f !important;
+}
+
+:root[data-theme="dark"] .bg-gray-50,
+html.dark .bg-gray-50 {
+    background-color: #182135 !important;
+    border-color: #1e293b !important;
+}
+
+:root[data-theme="dark"] .bg-gray-100,
+html.dark .bg-gray-100 {
+    background-color: #182135 !important;
+}
+
+:root[data-theme="dark"] .bg-primary-100,
+html.dark .bg-primary-100 {
+    background-color: rgba(108, 80, 233, 0.2) !important;
+}
+
+:root[data-theme="dark"] .text-primary-600,
+html.dark .text-primary-600 {
+    color: #a78bfa !important;
+}

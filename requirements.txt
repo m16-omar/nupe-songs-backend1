@@ -1,0 +1,9 @@
+Django>=4.2,<5.0
+djangorestframework
+djangorestframework-simplejwt
+django-storages
+boto3
+django-cors-headers
+pillow
+django-environ
+django-unfold==0.67.0

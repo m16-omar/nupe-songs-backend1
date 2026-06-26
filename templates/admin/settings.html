@@ -1,0 +1,82 @@
+{% extends "unfold/layouts/base.html" %}
+{% load i18n unfold %}
+
+{% block content %}
+<div class="flex flex-col gap-6 pb-16 overflow-y-auto h-[calc(100vh-80px)] pr-2">
+    <div>
+        <h1 class="text-2xl font-semibold tracking-tight text-gray-800 dark:text-white">System Settings</h1>
+        <p class="text-sm text-gray-500 mt-1">Configure global application variables and limits.</p>
+    </div>
+
+    <!-- Alert / Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="p-4 rounded-xl text-xs flex items-center gap-2 {% if message.tags == 'success' %}bg-emerald-500/10 border border-emerald-500/20 text-emerald-600{% else %}bg-red-500/10 border border-red-500/20 text-red-600{% endif %}">
+                <span class="material-symbols-outlined text-sm">
+                    {% if message.tags == 'success' %}check_circle{% else %}error{% endif %}
+                </span>
+                <span>{{ message }}</span>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="bg-white dark:bg-base-900 border border-gray-100 dark:border-base-800 rounded-2xl p-6 shadow-sm max-w-2xl">
+        <form method="POST" action="{% url 'admin_settings' %}" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- App Name -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-400 dark:text-gray-450 uppercase tracking-wider mb-2">
+                    Application Name
+                </label>
+                <input
+                    type="text"
+                    name="app_name"
+                    value="{{ settings.app_name }}"
+                    required
+                    placeholder="Nupe Songs"
+                    class="w-full px-4 py-3 bg-gray-50 dark:bg-base-950 border border-gray-200 dark:border-base-800 rounded-xl focus:border-[#6c50e9] focus:ring-1 focus:ring-[#6c50e9] outline-none transition-all text-sm text-gray-800 dark:text-white"
+                />
+            </div>
+
+            <!-- Allowed Upload Size -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-400 dark:text-gray-450 uppercase tracking-wider mb-2">
+                    Allowed Upload Size (MB)
+                </label>
+                <input
+                    type="number"
+                    name="allowed_upload_size_mb"
+                    value="{{ settings.allowed_upload_size_mb }}"
+                    required
+                    min="1"
+                    placeholder="20"
+                    class="w-full px-4 py-3 bg-gray-50 dark:bg-base-950 border border-gray-200 dark:border-base-800 rounded-xl focus:border-[#6c50e9] focus:ring-1 focus:ring-[#6c50e9] outline-none transition-all text-sm text-gray-800 dark:text-white"
+                />
+            </div>
+
+            <!-- Maintenance Mode -->
+            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-base-950 rounded-xl border border-gray-150 dark:border-base-800">
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Maintenance Mode</h4>
+                    <p class="text-[10px] text-gray-400">Lock the platform for general users to run database upgrades.</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" name="maintenance_mode" {% if settings.maintenance_mode %}checked{% endif %} class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-200 dark:bg-base-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#6c50e9]"></div>
+                </label>
+            </div>
+
+            <!-- Action Button -->
+            <div class="flex justify-end pt-4 border-t border-gray-100 dark:border-base-800">
+                <button
+                    type="submit"
+                    class="px-5 py-3 bg-[#6c50e9] hover:bg-[#573ecf] text-white text-xs font-semibold rounded-xl transition-all shadow-sm shadow-[#6c50e9]/20 hover:shadow-[#6c50e9]/30 active:scale-[0.98]"
+                >
+                    Save Settings
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

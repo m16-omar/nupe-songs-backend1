@@ -1,0 +1,12 @@
+{% load i18n %}
+
+{% if not theme %}
+    <div class="relative">
+        <a class="block cursor-pointer h-[18px] leading-none hover:text-base-700 dark:hover:text-base-200" 
+           x-on:click="adminTheme = adminTheme === 'dark' ? 'light' : 'dark'">
+            <span class="material-symbols-outlined">
+                <span x-text="adminTheme === 'dark' ? 'light_mode' : 'dark_mode'"></span>
+            </span>
+        </a>
+    </div>
+{% endif %}

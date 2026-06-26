@@ -1,0 +1,223 @@
+{% extends "unfold/layouts/base.html" %}
+{% load i18n unfold %}
+
+{% block content %}
+<div class="flex flex-col gap-6 pb-16 overflow-y-auto h-[calc(100vh-80px)] pr-2">
+    <div>
+        <h1 class="text-2xl font-semibold tracking-tight text-gray-800 dark:text-white">LRC Lyrics Manager</h1>
+        <p class="text-sm text-gray-500 mt-1">Audit and edit timed text lyrics for all tracks in your library.</p>
+    </div>
+
+    <!-- Alert Banner -->
+    <div id="alert-banner" class="hidden p-4 rounded-xl text-xs flex items-center gap-2 transition-all"></div>
+
+    <div class="bg-white dark:bg-base-900 border border-gray-100 dark:border-base-800 rounded-2xl overflow-hidden shadow-sm">
+        <div class="overflow-x-auto w-full">
+            <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                    <tr class="border-b border-gray-100 dark:border-base-800 bg-gray-50/50 dark:bg-base-950/20 text-gray-400 uppercase font-semibold text-[10px] tracking-wider">
+                        <th class="py-3 px-6">Track Title</th>
+                        <th class="py-3 px-3">Artist</th>
+                        <th class="py-3 px-3">Status</th>
+                        <th class="py-3 px-6 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50 dark:divide-base-800 text-sm">
+                    {% for song in songs %}
+                    <tr class="hover:bg-gray-50/50 dark:hover:bg-base-950/10 transition-colors" id="song-row-{{ song.id }}">
+                        <td class="py-3.5 px-6 font-semibold text-gray-700 dark:text-gray-300">{{ song.title }}</td>
+                        <td class="py-3.5 px-3 text-gray-500 dark:text-gray-400 font-medium">{{ song.artist.name }}</td>
+                        <td class="py-3.5 px-3" id="song-status-{{ song.id }}">
+                            {% if song.lyrics %}
+                            <span class="px-2 py-0.5 rounded-full font-bold text-[9px] uppercase tracking-wider bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+                                Synced
+                            </span>
+                            {% else %}
+                            <span class="px-2 py-0.5 rounded-full font-bold text-[9px] uppercase tracking-wider bg-amber-500/10 text-amber-600 border border-amber-500/20">
+                                Missing
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3.5 px-6 text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                <button onclick="openLyricsEditor({{ song.id }}, '{{ song.title|escapejs }}', '{{ song.artist.name|escapejs }}')" 
+                                        class="inline-flex items-center justify-center h-7 px-2.5 rounded-md border border-gray-200 dark:border-base-800 text-[10px] font-bold text-gray-600 dark:text-gray-300 bg-white dark:bg-base-950 hover:bg-primary-50 dark:hover:bg-primary-950/20 hover:text-primary-600 dark:hover:text-primary-500 transition-colors">
+                                    Edit
+                                </button>
+                                <button onclick="deleteLyrics({{ song.id }}, '{{ song.title|escapejs }}')" 
+                                        class="inline-flex items-center justify-center h-7 px-2.5 rounded-md border border-red-200 dark:border-red-950/30 text-[10px] font-bold text-red-600 dark:text-red-500 bg-white dark:bg-base-950 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-700 dark:hover:text-red-400 transition-colors">
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="lyrics-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-3xl bg-white dark:bg-base-900 border border-gray-150 dark:border-base-800 rounded-3xl p-6 shadow-2xl">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h2 class="text-base font-bold uppercase tracking-wider text-gray-800 dark:text-white" id="modal-song-title">Edit Lyrics</h2>
+                <p class="text-[10px] text-gray-400 mt-0.5" id="modal-song-artist"></p>
+            </div>
+            <button onclick="closeLyricsEditor()" class="text-gray-400 hover:text-gray-600 dark:hover:text-white">
+                <span class="material-symbols-outlined text-sm">close</span>
+            </button>
+        </div>
+
+        <div class="space-y-4">
+            <div class="p-3 bg-gray-50 dark:bg-base-950 border border-gray-100 dark:border-base-800 rounded-xl text-[10px] text-gray-500 dark:text-gray-400">
+                💡 <strong>Tip:</strong> Enter timestamp tags in the LRC format (e.g. <code>[01:23.45] lyric text</code>) to enable synced scrolling inside user apps!
+            </div>
+
+            <textarea id="modal-lyrics-text" rows="14" 
+                      class="w-full px-4 py-3 bg-gray-50 dark:bg-base-950 border border-gray-200 dark:border-base-800 rounded-xl outline-none focus:border-primary-600 text-xs font-mono text-gray-700 dark:text-white placeholder-gray-400"
+                      placeholder="[00:00.00] Intro&#10;[00:04.50] Paste your lyrics line-by-line here..."></textarea>
+
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-base-800">
+                <button type="button" onclick="closeLyricsEditor()" 
+                        class="px-4 py-2.5 border border-gray-200 dark:border-base-800 rounded-xl text-xs font-semibold text-gray-500 dark:text-gray-400 bg-white dark:bg-base-950">
+                    Cancel
+                </button>
+                <button id="modal-save-btn" onclick="saveLyrics()" 
+                        class="px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold rounded-xl disabled:opacity-50">
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let activeSongId = null;
+
+function showAlert(message, type) {
+    const banner = document.getElementById('alert-banner');
+    banner.innerText = message;
+    banner.className = 'p-4 rounded-xl text-xs flex items-center gap-2 transition-all ';
+    if (type === 'success') {
+        banner.className += 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-600';
+    } else {
+        banner.className += 'bg-red-500/10 border border-red-500/20 text-red-600';
+    }
+    banner.classList.remove('hidden');
+    setTimeout(() => banner.classList.add('hidden'), 5000);
+}
+
+function openLyricsEditor(songId, title, artist) {
+    activeSongId = songId;
+    document.getElementById('modal-song-title').innerText = "Edit Lyrics: " + title;
+    document.getElementById('modal-song-artist').innerText = "by " + artist;
+    document.getElementById('modal-lyrics-text').value = '';
+    document.getElementById('lyrics-modal').classList.remove('hidden');
+
+    // Fetch existing lyrics
+    fetch(`/api/songs/${songId}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.lyrics) {
+                document.getElementById('modal-lyrics-text').value = data.lyrics;
+            }
+        });
+}
+
+function closeLyricsEditor() {
+    document.getElementById('lyrics-modal').classList.add('hidden');
+    activeSongId = null;
+}
+
+function deleteLyrics(songId, songTitle) {
+    if (!confirm(`Are you sure you want to delete the lyrics for "${songTitle}"?`)) {
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('lyrics', '');
+
+    fetch(`/api/admin/songs/${songId}`, {
+        method: 'PUT',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: formData
+    })
+    .then(res => {
+        if (!res.ok) throw new Error('Failed to delete lyrics');
+        return res.json();
+    })
+    .then(data => {
+        showAlert('Lyrics deleted successfully!', 'success');
+        // Update status badge to "Missing"
+        const statusTd = document.getElementById(`song-status-${songId}`);
+        statusTd.innerHTML = `<span class="px-2 py-0.5 rounded-full font-bold text-[9px] uppercase tracking-wider bg-amber-500/10 text-amber-600 border border-amber-500/20">Missing</span>`;
+    })
+    .catch(err => {
+        showAlert(err.message, 'error');
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function saveLyrics() {
+    if (!activeSongId) return;
+    const saveBtn = document.getElementById('modal-save-btn');
+    const lyricsText = document.getElementById('modal-lyrics-text').value;
+
+    saveBtn.disabled = true;
+    saveBtn.innerText = 'Saving...';
+
+    const formData = new FormData();
+    formData.append('lyrics', lyricsText);
+
+    fetch(`/api/admin/songs/${activeSongId}`, {
+        method: 'PUT',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: formData
+    })
+    .then(res => {
+        if (!res.ok) throw new Error('Failed to save lyrics');
+        return res.json();
+    })
+    .then(data => {
+        showAlert('Lyrics saved successfully!', 'success');
+        
+        // Update status badge in the list
+        const statusTd = document.getElementById(`song-status-${activeSongId}`);
+        if (lyricsText.trim()) {
+            statusTd.innerHTML = `<span class="px-2 py-0.5 rounded-full font-bold text-[9px] uppercase tracking-wider bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">Synced</span>`;
+        } else {
+            statusTd.innerHTML = `<span class="px-2 py-0.5 rounded-full font-bold text-[9px] uppercase tracking-wider bg-amber-500/10 text-amber-600 border border-amber-500/20">Missing</span>`;
+        }
+        closeLyricsEditor();
+    })
+    .catch(err => {
+        showAlert(err.message, 'error');
+    })
+    .finally(() => {
+        saveBtn.disabled = false;
+        saveBtn.innerText = 'Save Changes';
+    });
+}
+</script>
+{% endblock %}
