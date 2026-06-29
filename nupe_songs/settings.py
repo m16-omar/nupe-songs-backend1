@@ -153,6 +153,13 @@ AUTHENTICATION_BACKENDS = [
 # CORS Settings
 CORS_ALLOW_ALL_ORIGINS = True  # In production, configure specific allowed hosts
 
+# Required for Django 4.0+ in production: trust the Render domain for CSRF
+CSRF_TRUSTED_ORIGINS = [
+    'https://nupe-songs-backend1.onrender.com',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
+
 # Django REST Framework Settings
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

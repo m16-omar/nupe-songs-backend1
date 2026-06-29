@@ -119,6 +119,10 @@ def dashboard_callback(request, context):
     all_db_songs = Song.objects.select_related('artist', 'album').order_by('-id')[:4]
     for idx, song in enumerate(all_db_songs):
         if idx < len(recent_songs_list):
+            try:
+                artwork_url = song.effective_artwork.url if song.effective_artwork else None
+            except Exception:
+                artwork_url = None
             recent_songs_list[idx] = {
                 "title": song.title,
                 "artist": song.artist.name,
@@ -126,7 +130,7 @@ def dashboard_callback(request, context):
                 "date": song.album.release_year if (song.album and song.album.release_year) else "Recently",
                 "status": "Published",
                 "status_class": "bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20",
-                "artwork": song.effective_artwork.url if song.effective_artwork else None
+                "artwork": artwork_url
             }
 
     context["recent_songs"] = recent_songs_list
