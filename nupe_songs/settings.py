@@ -211,7 +211,7 @@ if USE_S3:
         },
         "staticfiles": {
             # WhiteNoise serves static files efficiently in production
-            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
         },
     }
 else:
@@ -221,7 +221,7 @@ else:
         },
         "staticfiles": {
             # WhiteNoise serves static files efficiently in production
-            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
         },
     }
 
