@@ -220,7 +220,7 @@ if USE_CLOUDINARY:
         },
     }
 
-    MEDIA_URL = f'https://res.cloudinary.com/{CLOUDINARY_CLOUD_NAME}/'
+    MEDIA_URL = f'https://res.cloudinary.com/{CLOUDINARY_CLOUD_NAME}/image/upload/'
 else:
     STORAGES = {
         "default": {
