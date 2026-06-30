@@ -20,7 +20,7 @@ urlpatterns = [
     path('api/', include('api.urls')),
 ]
 
-# Serve static/media files locally during development (if S3 is not active)
-if settings.DEBUG and not getattr(settings, 'USE_S3', False):
+# Serve static/media files (if S3 is not active)
+if not getattr(settings, 'USE_S3', False):
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

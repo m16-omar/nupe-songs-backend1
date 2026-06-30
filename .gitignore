@@ -17,8 +17,8 @@ ENV/
 env/
 .venv/
 
-# Media files
-media/
+# Media files (commented out to track/upload media files to the server)
+# media/
 
 # Backups
 backups/
