@@ -8,10 +8,6 @@ python manage.py collectstatic --no-input
 
 python manage.py migrate
 
-# Load initial database fixtures if data.json exists
-if [ -f data.json ]; then
-    python manage.py loaddata data.json
-fi
 
 # Create superuser automatically from environment variables (if not exists)
 python manage.py shell << 'PYEOF'
