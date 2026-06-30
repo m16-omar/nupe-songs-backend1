@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'storages',
+    'cloudinary',
+    'cloudinary_storage',
     
     # Local apps
     'api',
@@ -187,40 +189,44 @@ SIMPLE_JWT = {
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
 }
 
-# S3 / DigitalOcean Spaces Cloud Storage Configuration
-USE_S3 = env('USE_S3')
-if USE_S3:
-    AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
-    AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
-    AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
-    
-    # Optional S3 Custom Domain (for CDN like CloudFront or DigitalOcean Spaces CDN)
-    AWS_S3_CUSTOM_DOMAIN = env('AWS_S3_CUSTOM_DOMAIN', default=None)
-    
-    # S3 Endpoint URL (e.g. for DigitalOcean Spaces or custom S3 compatible storage)
-    AWS_S3_ENDPOINT_URL = env('AWS_S3_ENDPOINT_URL', default=None)
-    
-    AWS_S3_OBJECT_PARAMETERS = {
-        'CacheControl': 'max-age=86400',
+# Cloudinary Configuration for media file storage (images + audio)
+USE_CLOUDINARY = env.bool('USE_CLOUDINARY', default=False)
+
+if USE_CLOUDINARY:
+    import cloudinary
+    CLOUDINARY_CLOUD_NAME = env('CLOUDINARY_CLOUD_NAME')
+    CLOUDINARY_API_KEY = env('CLOUDINARY_API_KEY')
+    CLOUDINARY_API_SECRET = env('CLOUDINARY_API_SECRET')
+
+    cloudinary.config(
+        cloud_name=CLOUDINARY_CLOUD_NAME,
+        api_key=CLOUDINARY_API_KEY,
+        api_secret=CLOUDINARY_API_SECRET,
+        secure=True,
+    )
+
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': CLOUDINARY_CLOUD_NAME,
+        'API_KEY': CLOUDINARY_API_KEY,
+        'API_SECRET': CLOUDINARY_API_SECRET,
     }
-    
-    # Configure STORAGES (Django 4.2+)
+
     STORAGES = {
         "default": {
-            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+            "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
         },
         "staticfiles": {
-            # WhiteNoise serves static files efficiently in production
             "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
         },
     }
+
+    MEDIA_URL = f'https://res.cloudinary.com/{CLOUDINARY_CLOUD_NAME}/'
 else:
     STORAGES = {
         "default": {
             "BACKEND": "django.core.files.storage.FileSystemStorage",
         },
         "staticfiles": {
-            # WhiteNoise serves static files efficiently in production
             "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
         },
     }

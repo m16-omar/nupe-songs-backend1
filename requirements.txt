@@ -10,3 +10,5 @@ django-unfold==0.67.0
 gunicorn
 whitenoise
 psycopg2-binary
+cloudinary
+django-cloudinary-storage
