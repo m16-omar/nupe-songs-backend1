@@ -1,0 +1,676 @@
+[
+{
+    "model": "api.artist",
+    "pk": 1,
+    "fields": {
+        "name": "Mahmud Mokwa",
+        "image": "artists/Mahmud_Mokwa.png",
+        "deleted_at": null
+    }
+},
+{
+    "model": "api.artist",
+    "pk": 2,
+    "fields": {
+        "name": "Prince Ahmad Chado",
+        "image": "artists/Prince_Ahmad_Chado.png",
+        "deleted_at": null
+    }
+},
+{
+    "model": "api.artist",
+    "pk": 3,
+    "fields": {
+        "name": "Bala MJ",
+        "image": "artists/Bala_MJ.png",
+        "deleted_at": null
+    }
+},
+{
+    "model": "api.artist",
+    "pk": 4,
+    "fields": {
+        "name": "Sadisu Mohammed",
+        "image": "artists/Sadisu_Mohammed.png",
+        "deleted_at": null
+    }
+},
+{
+    "model": "api.artist",
+    "pk": 7,
+    "fields": {
+        "name": "Salihu Unity",
+        "image": "artists/Salihu_Unity.png",
+        "deleted_at": null
+    }
+},
+{
+    "model": "api.artist",
+    "pk": 8,
+    "fields": {
+        "name": "Prince MK",
+        "image": "artists/Prince_Mk.png",
+        "deleted_at": null
+    }
+},
+{
+    "model": "api.artist",
+    "pk": 9,
+    "fields": {
+        "name": "DJ Zubis",
+        "image": "artists/DJ_Zubis.png",
+        "deleted_at": null
+    }
+},
+{
+    "model": "api.album",
+    "pk": 6,
+    "fields": {
+        "name": "Emigun",
+        "artist": 1,
+        "artwork": "albums/Emigun_Cover.png",
+        "release_year": 2005,
+        "deleted_at": null
+    }
+},
+{
+    "model": "api.genre",
+    "pk": 1,
+    "fields": {
+        "name": "Traditional",
+        "description": "Traditional folk music of the Nupe kingdom"
+    }
+},
+{
+    "model": "api.genre",
+    "pk": 2,
+    "fields": {
+        "name": "Gospel",
+        "description": "Inspirational christian rhythms and hymnals"
+    }
+},
+{
+    "model": "api.genre",
+    "pk": 3,
+    "fields": {
+        "name": "Afrobeats",
+        "description": "Modern African popular beats and synthesisers"
+    }
+},
+{
+    "model": "api.genre",
+    "pk": 4,
+    "fields": {
+        "name": "Soul/RnB",
+        "description": "Slow acoustic vocals and rhythmic beats"
+    }
+},
+{
+    "model": "api.genre",
+    "pk": 7,
+    "fields": {
+        "name": "Love",
+        "description": ""
+    }
+},
+{
+    "model": "api.song",
+    "pk": 1,
+    "fields": {
+        "title": "Dabe Dabe",
+        "artist": 1,
+        "album": 6,
+        "genre": 7,
+        "audio_file": "songs/Dabe_Dabe_SNz37Wi.mp3",
+        "artwork": "songs/artwork/Dabe_Dabe_Cover_Album.png",
+        "duration_ms": 240000,
+        "lyrics": "[00:00.00] (Intro Music)\r\n[00:04.00] Dabe Dabe, egi Nupe\r\n[00:08.00] Gbakako wo, ezhi be kpokpo\r\n[00:12.00] Dabe Dabe, egi Nupe\r\n[00:16.00] Wo yi nupe, de wun na a\r\n[00:20.00] (Melodious Instrumental)\r\n[00:24.00] Gently, gently, child of Nupe\r\n[00:28.00] Walk with pride, the land is bright\r\n[00:32.00] Gently, gently, child of Nupe\r\n[00:36.00] You are Nupe, never forget your roots\r\n[00:40.00] (Instrumental Bridge)\r\n[00:44.00] Ezhingi gwa, de emi gwa\r\n[00:48.00] Soko be kpe, na wo ba lo\r\n[00:52.00] Ka ji awo, Ka ji awo\r\n[00:56.00] Nupe ye bo, yi de laka\r\n[01:00.00] (English Translation)\r\n[01:04.00] Hold my hand, hold my home\r\n[01:08.00] Only God knows where you will go\r\n[01:12.00] Do your best, do your best\r\n[01:16.00] Nupe is loved, we have pride\r\n[01:20.00] (Melodious Instrumental Solo)\r\n[01:30.00] Dabe Dabe, egi Nupe\r\n[01:34.00] Gbakako wo, ezhi be kpokpo\r\n[01:38.00] Dabe Dabe, egi Nupe\r\n[01:42.00] Wo yi nupe, de wun na a\r\n[01:46.00] (English Chorus Repeat)\r\n[01:50.00] Gently, gently, child of Nupe\r\n[01:54.00] Walk with pride, the land is bright\r\n[01:58.00] Gently, gently, child of Nupe\r\n[02:02.00] You are Nupe, never forget your roots\r\n[02:06.00] (Bridge Repeat)\r\n[02:10.00] Ezhingi gwa, de emi gwa\r\n[02:14.00] Soko be kpe, na wo ba lo\r\n[02:18.00] Ka ji awo, Ka ji awo\r\n[02:22.00] Nupe ye bo, yi de laka\r\n[02:26.00] (Outro Music to end)\r\n[02:35.00] (Song completed)\r\n",
+        "deleted_at": null
+    }
+},
+{
+    "model": "api.song",
+    "pk": 2,
+    "fields": {
+        "title": "Eganzuma",
+        "artist": 1,
+        "album": 6,
+        "genre": 7,
+        "audio_file": "songs/Eganzuma.mp3",
+        "artwork": "songs/artwork/Eganzuma.jpeg",
+        "duration_ms": 419000,
+        "lyrics": "[00:00.00] (Intro Beat)\n[00:08.00] Eganzuma, eganzuma\n[00:13.00] Egan na wo ba na, de gbari a\n[00:18.00] Eganzuma, eganzuma\n[00:23.00] Wo da a kpa, egan nda ye\n[00:28.00] (Drum Roll Instrumental)\n[00:33.00] Words of wisdom, words of wisdom\n[00:38.00] The words you speak have weight\n[00:43.00] Words of wisdom, words of wisdom\n[00:48.00] Remember the sayings of the elders\n[00:53.00] (Instrumental Interlude)\n[00:58.00] Soko da, wun yi gaba\n[01:03.00] Enchi le yi, wun la wo gwa\n[01:08.00] Gbako na wo ji, wun ge be\n[01:13.00] Nupe ye bo, ezhi ge!\n[01:18.00] (Traditional Flutes Solo)\n[01:30.00] Walk high, speak true, child of Nupe\n[01:35.00] For the ancestors stand with you\n[01:40.00] Soko be ya wo, de nna ya\n[01:45.00] Eganzuma, Nupe heritage!\n[01:50.00] (Extended Rhythm Interlude)\n[02:10.00] Eganzuma, eganzuma\n[02:15.00] Egan na wo ba na, de gbari a\n[02:20.00] Eganzuma, eganzuma\n[02:25.00] Wo da a kpa, egan nda ye\n[02:30.00] (Drum and Flutes Chorus)\n[02:40.00] Words of wisdom, words of wisdom\n[02:45.00] The words you speak have weight\n[02:50.00] Words of wisdom, words of wisdom\n[02:55.00] Remember the sayings of the elders\n[03:00.00] (Acoustic Guitar Bridge)\n[03:20.00] Soko da, wun yi gaba\n[03:25.00] Enchi le yi, wun la wo gwa\n[03:30.00] Gbako na wo ji, wun ge be\n[03:35.00] Nupe ye bo, ezhi ge!\n[03:40.00] (Melodic Flutes Solo)\n[04:00.00] Walk high, speak true, child of Nupe\n[04:05.00] For the ancestors stand with you\n[04:10.00] Soko be ya wo, de nna ya\n[04:15.00] Eganzuma, Nupe heritage!\n[04:20.00] (Traditional Beat & Chants)\n[04:40.00] Eganzuma, eganzuma\n[04:45.00] Egan na wo ba na, de gbari a\n[04:50.00] Eganzuma, eganzuma\n[04:55.00] Wo da a kpa, egan nda ye\n[05:00.00] (English Verse Repeat)\n[05:05.00] Words of wisdom, words of wisdom\n[05:10.00] The words you speak have weight\n[05:15.00] Words of wisdom, words of wisdom\n[05:20.00] Remember the sayings of the elders\n[05:25.00] (Percussion and Flutes Solo)\n[05:45.00] Soko da, wun yi gaba\n[05:50.00] Enchi le yi, wun la wo gwa\n[05:55.00] Gbako na wo ji, wun ge be\n[06:00.00] Nupe ye bo, ezhi ge!\n[06:05.00] (Traditional Flutes Outro)\n[06:20.00] Eganzuma, Nupe heritage!\n[06:30.00] (Outro Drums Fade)\n[06:40.00] (Song completed)",
+        "deleted_at": null
+    }
+},
+{
+    "model": "api.song",
+    "pk": 3,
+    "fields": {
+        "title": "Mokwaci",
+        "artist": 3,
+        "album": 6,
+        "genre": 3,
+        "audio_file": "songs/Mokwa.mp3",
+        "artwork": "songs/artwork/Sanwo.png",
+        "duration_ms": 200000,
+        "lyrics": "[00:00.00] (Highlife Beat Intro)\n[00:05.00] Mokwa, ezhi gege\n[00:10.00] Mokwa, ezhi nupe\n[00:15.00] Mokwa, na yi da na\n[00:20.00] Ezhi ge, na wo kpa na\n[00:25.00] (Brass Solo)\n[00:30.00] Mokwa, the beautiful town\n[00:35.00] Mokwa, the Nupe town\n[00:40.00] Mokwa, where we belong\n[00:45.00] A town of great history\n[00:50.00] (Guitar Solo Bridge)\n[00:55.00] Gbako be kpe, na yi lo na\n[01:00.00] Emizhi Mokwa, de efa bo\n[01:05.00] Soko be de, ezhi na yi\n[01:10.00] Nupe songs, Mokwa riddims!\n[01:15.00] (Highlife Beat Bridge)\n[01:25.00] Mokwa, ezhi gege\n[01:30.00] Mokwa, ezhi nupe\n[01:35.00] Mokwa, na yi da na\n[01:40.00] Ezhi ge, na wo kpa na\n[01:45.00] (Brass and Guitar Interlude)\n[01:55.00] Mokwa, the beautiful town\n[02:00.00] Mokwa, the Nupe town\n[02:05.00] Mokwa, where we belong\n[02:10.00] A town of great history\n[02:15.00] (Melodic Trumpets Bridge)\n[02:25.00] Gbako be kpe, na yi lo na\n[02:30.00] Emizhi Mokwa, de efa bo\n[02:35.00] Soko be de, ezhi na yi\n[02:40.00] Mokwa, ezhi gege!\n[02:45.00] (Outro Horns to end)\n[02:59.00] (Song completed)",
+        "deleted_at": null
+    }
+},
+{
+    "model": "api.customuser",
+    "pk": 3,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$w4PAcaqI8kMcFQt1IOHDqB$zcgfUnGM+OcmaUqeCvgRPxRIz/tg51zIUNyRfcqnlX0=",
+        "last_login": "2026-06-24T15:12:58.566Z",
+        "is_superuser": true,
+        "username": "admin",
+        "first_name": "",
+        "last_name": "",
+        "email": "admin@nupesongs.com",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2026-06-21T10:55:36.258Z",
+        "last_active_at": null,
+        "deleted_at": null,
+        "groups": [],
+        "user_permissions": [],
+        "favorite_songs": []
+    }
+},
+{
+    "model": "api.customuser",
+    "pk": 4,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$QlYpV14EIJcwaJGyv4pUdR$cSYFciT2L3A+M2FglPIDrZCQQDT0gobl/ZJ4WrR5DT0=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "nupe_fan",
+        "first_name": "",
+        "last_name": "",
+        "email": "fan@nupe.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-06-21T10:55:36.442Z",
+        "last_active_at": null,
+        "deleted_at": null,
+        "groups": [],
+        "user_permissions": [],
+        "favorite_songs": [
+            1,
+            2
+        ]
+    }
+},
+{
+    "model": "api.customuser",
+    "pk": 5,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$ShzBveCRRnytDdlJHZ2Lk3$fEy2InXAb5jndfPmsxc83IJtE+yAgHGHxZ1VGZnJPvI=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "jane_cooper",
+        "first_name": "",
+        "last_name": "",
+        "email": "jane@example.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-06-21T10:55:36.624Z",
+        "last_active_at": null,
+        "deleted_at": null,
+        "groups": [],
+        "user_permissions": [],
+        "favorite_songs": []
+    }
+},
+{
+    "model": "api.customuser",
+    "pk": 6,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$RiT3wN4ruxKKcAsa2jvh3b$QRWNMebmwe/Fp+DpU0y0eP4KSh58dlSi8I0SJIv5isk=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "expanded_verifier_fan",
+        "first_name": "",
+        "last_name": "",
+        "email": "verifier@nupe.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-06-21T11:17:20.029Z",
+        "last_active_at": "2026-06-21T11:29:51.326Z",
+        "deleted_at": null,
+        "groups": [],
+        "user_permissions": [],
+        "favorite_songs": []
+    }
+},
+{
+    "model": "api.customuser",
+    "pk": 7,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$ggYynQEcB8w2tdDjUC70us$H028fPlpCstiOOVH6D8/8Ka9x1dbZA+oTyrR3eBMe+8=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "testuser",
+        "first_name": "",
+        "last_name": "",
+        "email": "test@test.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-06-24T16:55:17.892Z",
+        "last_active_at": "2026-06-24T16:59:28.845Z",
+        "deleted_at": null,
+        "groups": [],
+        "user_permissions": [],
+        "favorite_songs": []
+    }
+},
+{
+    "model": "api.customuser",
+    "pk": 8,
+    "fields": {
+        "password": "pbkdf2_sha256$600000$zHmxQLtvyF534slEVRkEuS$AgJW5HB4M+MBTLQW0SxWR0yW1wRm4Z2nZTsYsBOdQlQ=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "icon@",
+        "first_name": "",
+        "last_name": "",
+        "email": "uabdullahi676@gmail.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-06-24T17:27:30.509Z",
+        "last_active_at": "2026-06-26T08:09:21.163Z",
+        "deleted_at": null,
+        "groups": [],
+        "user_permissions": [],
+        "favorite_songs": []
+    }
+},
+{
+    "model": "api.playlist",
+    "pk": 1,
+    "fields": {
+        "name": "My Nupe Mix",
+        "user": 4,
+        "created_at": "2026-06-21T10:55:36.816Z",
+        "deleted_at": null,
+        "songs": [
+            1
+        ]
+    }
+},
+{
+    "model": "api.subscription",
+    "pk": 1,
+    "fields": {
+        "user": 4,
+        "plan": "Premium",
+        "status": "Active",
+        "price": 9.99,
+        "billing_cycle": "Monthly",
+        "next_billing_date": "2026-07-21T10:55:36.805Z",
+        "created_at": "2026-06-21T10:55:36.805Z"
+    }
+},
+{
+    "model": "api.subscription",
+    "pk": 2,
+    "fields": {
+        "user": 5,
+        "plan": "Free",
+        "status": "Active",
+        "price": 0.0,
+        "billing_cycle": "Monthly",
+        "next_billing_date": "2026-07-21T10:55:36.806Z",
+        "created_at": "2026-06-21T10:55:36.806Z"
+    }
+},
+{
+    "model": "api.downloadlog",
+    "pk": 1,
+    "fields": {
+        "user": 4,
+        "song": 1,
+        "downloaded_at": "2026-06-21T10:55:36.818Z",
+        "ip_address": "192.168.1.15",
+        "device": "iPhone 15 Pro Max"
+    }
+},
+{
+    "model": "api.downloadlog",
+    "pk": 2,
+    "fields": {
+        "user": 5,
+        "song": 2,
+        "downloaded_at": "2026-06-21T10:55:36.818Z",
+        "ip_address": "102.168.1.20",
+        "device": "Samsung Galaxy S24"
+    }
+},
+{
+    "model": "api.listeninghistory",
+    "pk": 1,
+    "fields": {
+        "user": 4,
+        "song": 1,
+        "played_at": "2026-06-21T10:55:36.819Z",
+        "duration_seconds": 154
+    }
+},
+{
+    "model": "api.listeninghistory",
+    "pk": 2,
+    "fields": {
+        "user": 5,
+        "song": 2,
+        "played_at": "2026-06-21T10:55:36.820Z",
+        "duration_seconds": 180
+    }
+},
+{
+    "model": "api.listeninghistory",
+    "pk": 3,
+    "fields": {
+        "user": 3,
+        "song": 1,
+        "played_at": "2026-06-24T16:31:53.118Z",
+        "duration_seconds": 240
+    }
+},
+{
+    "model": "api.listeninghistory",
+    "pk": 4,
+    "fields": {
+        "user": 3,
+        "song": 2,
+        "played_at": "2026-06-24T16:32:28.116Z",
+        "duration_seconds": 419
+    }
+},
+{
+    "model": "api.listeninghistory",
+    "pk": 5,
+    "fields": {
+        "user": 3,
+        "song": 1,
+        "played_at": "2026-06-24T16:32:59.502Z",
+        "duration_seconds": 240
+    }
+},
+{
+    "model": "api.listeninghistory",
+    "pk": 6,
+    "fields": {
+        "user": 3,
+        "song": 2,
+        "played_at": "2026-06-24T16:33:03.934Z",
+        "duration_seconds": 419
+    }
+},
+{
+    "model": "api.listeninghistory",
+    "pk": 7,
+    "fields": {
+        "user": 3,
+        "song": 1,
+        "played_at": "2026-06-24T17:25:51.725Z",
+        "duration_seconds": 240
+    }
+},
+{
+    "model": "api.listeninghistory",
+    "pk": 8,
+    "fields": {
+        "user": 3,
+        "song": 3,
+        "played_at": "2026-06-24T17:27:52.368Z",
+        "duration_seconds": 200
+    }
+},
+{
+    "model": "api.listeninghistory",
+    "pk": 9,
+    "fields": {
+        "user": 3,
+        "song": 2,
+        "played_at": "2026-06-24T17:28:00.237Z",
+        "duration_seconds": 419
+    }
+},
+{
+    "model": "api.listeninghistory",
+    "pk": 10,
+    "fields": {
+        "user": 3,
+        "song": 1,
+        "played_at": "2026-06-24T17:28:03.683Z",
+        "duration_seconds": 240
+    }
+},
+{
+    "model": "api.listeninghistory",
+    "pk": 11,
+    "fields": {
+        "user": 3,
+        "song": 1,
+        "played_at": "2026-06-25T06:49:05.515Z",
+        "duration_seconds": 240
+    }
+},
+{
+    "model": "api.listeninghistory",
+    "pk": 12,
+    "fields": {
+        "user": 3,
+        "song": 1,
+        "played_at": "2026-06-25T06:49:12.030Z",
+        "duration_seconds": 240
+    }
+},
+{
+    "model": "api.listeninghistory",
+    "pk": 13,
+    "fields": {
+        "user": 3,
+        "song": 1,
+        "played_at": "2026-06-25T06:51:41.905Z",
+        "duration_seconds": 240
+    }
+},
+{
+    "model": "api.listeninghistory",
+    "pk": 14,
+    "fields": {
+        "user": 3,
+        "song": 1,
+        "played_at": "2026-06-25T15:33:17.147Z",
+        "duration_seconds": 240
+    }
+},
+{
+    "model": "api.listeninghistory",
+    "pk": 15,
+    "fields": {
+        "user": 3,
+        "song": 2,
+        "played_at": "2026-06-25T15:33:36.923Z",
+        "duration_seconds": 419
+    }
+},
+{
+    "model": "api.listeninghistory",
+    "pk": 16,
+    "fields": {
+        "user": 3,
+        "song": 1,
+        "played_at": "2026-06-25T15:34:14.923Z",
+        "duration_seconds": 240
+    }
+},
+{
+    "model": "api.listeninghistory",
+    "pk": 17,
+    "fields": {
+        "user": 3,
+        "song": 2,
+        "played_at": "2026-06-25T15:36:55.560Z",
+        "duration_seconds": 419
+    }
+},
+{
+    "model": "api.listeninghistory",
+    "pk": 18,
+    "fields": {
+        "user": 3,
+        "song": 1,
+        "played_at": "2026-06-25T16:34:59.036Z",
+        "duration_seconds": 240
+    }
+},
+{
+    "model": "api.listeninghistory",
+    "pk": 19,
+    "fields": {
+        "user": 3,
+        "song": 1,
+        "played_at": "2026-06-25T16:41:41.795Z",
+        "duration_seconds": 240
+    }
+},
+{
+    "model": "api.listeninghistory",
+    "pk": 20,
+    "fields": {
+        "user": 3,
+        "song": 3,
+        "played_at": "2026-06-25T17:16:14.757Z",
+        "duration_seconds": 200
+    }
+},
+{
+    "model": "api.listeninghistory",
+    "pk": 21,
+    "fields": {
+        "user": 3,
+        "song": 3,
+        "played_at": "2026-06-25T17:29:50.172Z",
+        "duration_seconds": 200
+    }
+},
+{
+    "model": "api.banner",
+    "pk": 1,
+    "fields": {
+        "title": "Nupe Traditional Music Festival 2026",
+        "image_url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=60",
+        "link_url": "/events/traditional-fest-2026",
+        "is_active": true,
+        "order": 1,
+        "created_at": "2026-06-21T10:55:36.820Z"
+    }
+},
+{
+    "model": "api.banner",
+    "pk": 2,
+    "fields": {
+        "title": "Top Traditional Hits Playlist Out Now!",
+        "image_url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=60",
+        "link_url": "/playlists/1",
+        "is_active": true,
+        "order": 2,
+        "created_at": "2026-06-21T10:55:36.821Z"
+    }
+},
+{
+    "model": "api.announcement",
+    "pk": 1,
+    "fields": {
+        "title": "Scheduled Server Maintenance",
+        "content": "We will be conducting database tuning on June 20, 2026. Expect minor interruptions.",
+        "target": "All",
+        "is_active": true,
+        "created_at": "2026-06-21T10:55:36.821Z"
+    }
+},
+{
+    "model": "api.announcement",
+    "pk": 2,
+    "fields": {
+        "title": "Exclusive High-Fidelity Audio Tier Available Now!",
+        "content": "Unlock 320kbps high fidelity streaming on your account dashboard today.",
+        "target": "Premium",
+        "is_active": true,
+        "created_at": "2026-06-21T10:55:36.822Z"
+    }
+},
+{
+    "model": "api.faq",
+    "pk": 1,
+    "fields": {
+        "question": "How do I download songs offline?",
+        "answer": "Go to any track details card and hit the \"Download\" button. Downloaded songs will appear in your local library.",
+        "category": "Downloads",
+        "order": 1
+    }
+},
+{
+    "model": "api.faq",
+    "pk": 2,
+    "fields": {
+        "question": "Can I cancel my subscription anytime?",
+        "answer": "Yes, navigate to Settings > Billing and press \"Cancel Subscription\" to stop recurring billing immediately.",
+        "category": "Billing",
+        "order": 2
+    }
+},
+{
+    "model": "api.systemsetting",
+    "pk": 1,
+    "fields": {
+        "app_name": "Verifier Portal updated",
+        "maintenance_mode": false,
+        "allowed_upload_size_mb": 30
+    }
+},
+{
+    "model": "api.activitylog",
+    "pk": 1,
+    "fields": {
+        "user": 3,
+        "action": "APP_INITIALIZATION",
+        "details": "Next.js backend and local SQLite DB initialized successfully.",
+        "created_at": "2026-06-21T10:55:36.823Z"
+    }
+},
+{
+    "model": "api.activitylog",
+    "pk": 2,
+    "fields": {
+        "user": 3,
+        "action": "SONG_CREATE",
+        "details": "Admin created new song: Dabe Dabe.",
+        "created_at": "2026-06-21T10:55:36.824Z"
+    }
+},
+{
+    "model": "api.activitylog",
+    "pk": 3,
+    "fields": {
+        "user": 3,
+        "action": "DB_BACKUP_CREATE",
+        "details": "Admin created database backup: database_backup_2026-06-21T11-17-20.db",
+        "created_at": "2026-06-21T11:17:20.702Z"
+    }
+},
+{
+    "model": "api.activitylog",
+    "pk": 4,
+    "fields": {
+        "user": 3,
+        "action": "DB_BACKUP_CREATE",
+        "details": "Admin created database backup: database_backup_2026-06-21T11-29-51.db",
+        "created_at": "2026-06-21T11:29:51.648Z"
+    }
+}
+]
