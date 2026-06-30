@@ -1171,3 +1171,14 @@ def admin_trash_view(request):
     return render(request, 'admin/trash.html', context)
 
 
+from django.core.management import call_command
+from django.http import JsonResponse
+
+def load_fixtures_view(request):
+    try:
+        call_command('loaddata', 'data.json')
+        return JsonResponse({'status': 'success', 'message': 'Fixtures loaded successfully'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+

@@ -16,7 +16,8 @@ from .views import (
     AdminListeningHistoryViewSet, AdminFavoriteView,
     AdminActivityLogViewSet, AdminSettingsView,
     AdminBackupView, AdminTrashView,
-    AdminTrashRestoreView, AdminTrashPurgeView
+    AdminTrashRestoreView, AdminTrashPurgeView,
+    load_fixtures_view
 )
 
 class OptionalSlashRouter(DefaultRouter):
@@ -60,6 +61,9 @@ urlpatterns = [
     re_path(r'^admin/trash/?$', AdminTrashView.as_view(), name='admin_trash'),
     re_path(r'^admin/trash/restore/?$', AdminTrashRestoreView.as_view(), name='admin_trash_restore'),
     re_path(r'^admin/trash/purge/?$', AdminTrashPurgeView.as_view(), name='admin_trash_purge'),
+
+    # Load Fixtures utility endpoint
+    re_path(r'^load-fixtures/?$', load_fixtures_view, name='load_fixtures'),
 
     # Default router URLs
     re_path(r'^', include(router.urls)),
