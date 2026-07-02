@@ -145,7 +145,7 @@ class PlaylistAdmin(ActionsMixin, ModelAdmin):
 
 @admin.register(CustomUser)
 class CustomUserAdmin(ActionsMixin, BaseUserAdmin, ModelAdmin):
-    list_display = ('username', 'email', 'is_staff', 'deleted_at', 'row_actions')
+    list_display = ('first_name', 'last_name', 'email', 'is_staff', 'deleted_at', 'row_actions')
     filter_horizontal = BaseUserAdmin.filter_horizontal + ('favorite_songs',)
     fieldsets = BaseUserAdmin.fieldsets + (
         ('Favorites', {'fields': ('favorite_songs',)}),

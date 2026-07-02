@@ -57,7 +57,15 @@ class CustomUser(AbstractUser):
     deleted_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return self.username
+        return self.get_full_name() or self.username
+
+@admin.register(CustomUser)
+class CustomUserAdmin(BaseUserAdmin):
+    list_display = ('username', 'first_name', 'last_name', 'email', 'is_staff', 'deleted_at')
+    filter_horizontal = BaseUserAdmin.filter_horizontal + ('favorite_songs',)
+    fieldsets = BaseUserAdmin.fieldsets + (
+        ('Extra Fields', {'fields': ('favorite_songs', 'last_active_at', 'deleted_at')}),
+    )
 
 class Playlist(models.Model):
     name = models.CharField(max_length=255)

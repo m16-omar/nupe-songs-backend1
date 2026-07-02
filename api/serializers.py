@@ -10,14 +10,27 @@ User = get_user_model()
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    first_name = serializers.CharField(max_length=150)
+    last_name = serializers.CharField(max_length=150)
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'password')
+        fields = ('id', 'first_name', 'last_name', 'email', 'password')
 
     def create(self, validated_data):
+        import re, uuid
+        first = validated_data['first_name'].strip()
+        last  = validated_data['last_name'].strip()
+        # Auto-generate a unique username from first + last name
+        base = re.sub(r'[^a-zA-Z0-9]', '_', f"{first}_{last}").lower()
+        username = base
+        # Ensure uniqueness
+        if User.objects.filter(username=username).exists():
+            username = f"{base}_{uuid.uuid4().hex[:6]}"
         user = User.objects.create_user(
-            username=validated_data['username'],
+            username=username,
+            first_name=first,
+            last_name=last,
             email=validated_data.get('email', ''),
             password=validated_data['password']
         )
@@ -113,10 +126,14 @@ class SongSerializer(serializers.ModelSerializer):
 
 class UserMeSerializer(serializers.ModelSerializer):
     favorite_songs = SongSerializer(many=True, read_only=True)
+    full_name = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'favorite_songs')
+        fields = ('id', 'first_name', 'last_name', 'full_name', 'email', 'favorite_songs')
+
+    def get_full_name(self, obj):
+        return obj.get_full_name() or obj.username
 
 class AlbumWithSongsSerializer(serializers.ModelSerializer):
     artist = SimpleArtistSerializer(read_only=True)
@@ -192,27 +209,33 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
     def get_user(self, obj):
         return {
-            'username': obj.user.username,
+            'name': obj.user.get_full_name() or obj.user.username,
             'email': obj.user.email
         }
 
 class DownloadLogSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='user.username', read_only=True)
+    user_name = serializers.SerializerMethodField()
     song_title = serializers.CharField(source='song.title', read_only=True)
     artist_name = serializers.CharField(source='song.artist.name', read_only=True)
 
     class Meta:
         model = DownloadLog
-        fields = ('id', 'downloaded_at', 'ip_address', 'device', 'username', 'song_title', 'artist_name')
+        fields = ('id', 'downloaded_at', 'ip_address', 'device', 'user_name', 'song_title', 'artist_name')
+
+    def get_user_name(self, obj):
+        return obj.user.get_full_name() or obj.user.username
 
 class ListeningHistorySerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='user.username', read_only=True)
+    user_name = serializers.SerializerMethodField()
     song_title = serializers.CharField(source='song.title', read_only=True)
     artist_name = serializers.CharField(source='song.artist.name', read_only=True)
 
     class Meta:
         model = ListeningHistory
-        fields = ('id', 'played_at', 'duration_seconds', 'username', 'song_title', 'artist_name')
+        fields = ('id', 'played_at', 'duration_seconds', 'user_name', 'song_title', 'artist_name')
+
+    def get_user_name(self, obj):
+        return obj.user.get_full_name() or obj.user.username
 
 class BannerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -235,8 +258,11 @@ class SystemSettingSerializer(serializers.ModelSerializer):
         fields = ('id', 'app_name', 'maintenance_mode', 'allowed_upload_size_mb')
 
 class ActivityLogSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='user.username', read_only=True)
+    user_name = serializers.SerializerMethodField()
 
     class Meta:
         model = ActivityLog
-        fields = ('id', 'action', 'details', 'created_at', 'username')
+        fields = ('id', 'action', 'details', 'created_at', 'user_name')
+
+    def get_user_name(self, obj):
+        return obj.user.get_full_name() or obj.user.username
