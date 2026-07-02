@@ -715,6 +715,52 @@ class AdminDownloadViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = DownloadLogSerializer
     queryset = DownloadLog.objects.all().order_by('-downloaded_at')
 
+    @action(detail=False, methods=['get'], url_path='user-stats')
+    def user_stats(self, request):
+        """Returns download count per user, sorted by most downloads."""
+        from django.db.models import Count, Max
+        stats = (
+            DownloadLog.objects
+            .values('user__id', 'user__first_name', 'user__last_name', 'user__email')
+            .annotate(
+                download_count=Count('id'),
+                last_download=Max('downloaded_at'),
+            )
+            .order_by('-download_count')
+        )
+        data = [
+            {
+                'user_id': s['user__id'],
+                'full_name': f"{s['user__first_name']} {s['user__last_name']}".strip() or s['user__email'],
+                'email': s['user__email'],
+                'download_count': s['download_count'],
+                'last_download': s['last_download'],
+            }
+            for s in stats
+        ]
+        return Response(data)
+
+    @action(detail=False, methods=['get'], url_path='song-stats')
+    def song_stats(self, request):
+        """Returns download count per song, sorted by most downloaded."""
+        from django.db.models import Count
+        stats = (
+            DownloadLog.objects
+            .values('song__id', 'song__title', 'song__artist__name')
+            .annotate(download_count=Count('id'))
+            .order_by('-download_count')
+        )
+        data = [
+            {
+                'song_id': s['song__id'],
+                'title': s['song__title'],
+                'artist': s['song__artist__name'],
+                'download_count': s['download_count'],
+            }
+            for s in stats
+        ]
+        return Response(data)
+
 class AdminListeningHistoryViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAdminUser]
     serializer_class = ListeningHistorySerializer
