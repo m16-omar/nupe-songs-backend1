@@ -1,34 +1,62 @@
-import json
-import calendar
-from datetime import timedelta
-from django.utils import timezone
-from .models import Artist, Album, Song, Playlist, CustomUser
+from django.db import models
+from .models import Artist, Album, Song, Playlist, CustomUser, Subscription, DownloadLog, ListeningHistory
+
+def format_stat_number(num):
+    if num >= 1_000_000:
+        return f"{num / 1_000_000:.2f}M".replace(".00M", "M")
+    elif num >= 1_000:
+        return f"{num / 1_000:.1f}K".replace(".0K", "K")
+    return str(num)
+
+def get_weekly_change(queryset, date_field):
+    now = timezone.now()
+    seven_days_ago = now - timedelta(days=7)
+    fourteen_days_ago = now - timedelta(days=14)
+    
+    current_count = queryset.filter(**{f"{date_field}__gte": seven_days_ago}).count()
+    previous_count = queryset.filter(**{f"{date_field}__range": (fourteen_days_ago, seven_days_ago)}).count()
+    
+    if previous_count == 0:
+        if current_count > 0:
+            return "↑ +100.0%"
+        else:
+            return "+0.0%"
+            
+    pct_change = ((current_count - previous_count) / previous_count) * 100.0
+    sign = "+" if pct_change >= 0 else ""
+    arrow = "↑" if pct_change >= 0 else "↓"
+    return f"{arrow} {sign}{pct_change:.1f}%"
 
 def dashboard_callback(request, context):
     """
     Callback for django-unfold to inject data into the admin dashboard matching Lovable's Nupe Songs app.
     """
-    db_users_count = CustomUser.objects.count()
-    db_songs_count = Song.objects.count()
-    db_artists_count = Artist.objects.count()
-    db_albums_count = Album.objects.count()
-    db_playlists_count = Playlist.objects.count()
-
-    # Replicate exact default values from the Lovable app code with database variation
-    users_val = 24532 + max(0, db_users_count - 1)
-    songs_val = 18392 + max(0, db_songs_count - 1)
+    db_users_count = CustomUser.objects.filter(deleted_at__isnull=True).count()
+    db_songs_count = Song.objects.filter(deleted_at__isnull=True).count()
+    db_streams_count = ListeningHistory.objects.count()
+    db_downloads_count = DownloadLog.objects.count()
     
-    # Calculate streams, downloads and revenue dynamically based on database contents
-    streams_val = 2.45 + (db_songs_count * 0.01)
-    downloads_val = 482345 + (db_playlists_count * 45)
-    revenue_val = 48392 + (db_songs_count * 75)
+    # Calculate revenue from Active subscriptions
+    revenue_val = Subscription.objects.filter(status="Active").aggregate(total=models.Sum('price'))['total'] or 0.0
 
-    # Format values matching Lovable representations
-    total_users_str = f"{users_val:,}"
-    total_songs_str = f"{songs_val:,}"
-    total_streams_str = f"{streams_val:.2f}M"
-    downloads_str = f"{downloads_val:,}"
-    revenue_str = f"${revenue_val:,}"
+    # Format values with dynamic real values
+    total_users_str = f"{db_users_count:,}"
+    total_songs_str = f"{db_songs_count:,}"
+    total_streams_str = format_stat_number(db_streams_count)
+    downloads_str = f"{db_downloads_count:,}"
+    revenue_str = f"${revenue_val:,.2f}"
+
+    # Calculate trends
+    total_users_change = get_weekly_change(CustomUser.objects.filter(deleted_at__isnull=True), 'date_joined')
+    total_songs_change = "+0.0%" # Song has no creation date field, so we show stable
+    total_streams_change = get_weekly_change(ListeningHistory.objects.all(), 'played_at')
+    downloads_change = get_weekly_change(DownloadLog.objects.all(), 'downloaded_at')
+    revenue_change = get_weekly_change(Subscription.objects.filter(status='Active'), 'created_at')
+
+    # Date range string for header
+    now = timezone.now()
+    start_date = now - timedelta(days=6)
+    date_range_str = f"{start_date.strftime('%b %d')} – {now.strftime('%b %d, %Y')}"
 
     context.update({
         "total_users_str": total_users_str,
@@ -36,40 +64,101 @@ def dashboard_callback(request, context):
         "total_streams_str": total_streams_str,
         "downloads_str": downloads_str,
         "revenue_str": revenue_str,
+        "total_users_change": total_users_change,
+        "total_songs_change": total_songs_change,
+        "total_streams_change": total_streams_change,
+        "downloads_change": downloads_change,
+        "revenue_change": revenue_change,
+        "date_range_str": date_range_str,
     })
 
     # Bottom progress cards
-    active_subs = 8542 + max(0, db_users_count - 1)
-    free_users = 15990 + max(0, db_users_count - 1)
-    storage_val = 1.24 + (db_songs_count * 0.002)
+    active_subs = Subscription.objects.filter(status="Active").count()
+    free_users = max(0, db_users_count - active_subs)
+    
+    # Progress bars %
+    active_subs_pct = int((active_subs / db_users_count * 100)) if db_users_count > 0 else 0
+    free_users_pct = int((free_users / db_users_count * 100)) if db_users_count > 0 else 0
+
+    # Calculate storage size of all files
+    total_bytes = 0
+    for song in Song.objects.all():
+        try:
+            if song.audio_file:
+                total_bytes += song.audio_file.size
+        except Exception:
+            pass
+        try:
+            if song.artwork:
+                total_bytes += song.artwork.size
+        except Exception:
+            pass
+    for album in Album.objects.all():
+        try:
+            if album.artwork:
+                total_bytes += album.artwork.size
+        except Exception:
+            pass
+    for artist in Artist.objects.all():
+        try:
+            if artist.image:
+                total_bytes += artist.image.size
+        except Exception:
+            pass
+
+    # 5 TB baseline limit
+    storage_limit = 5 * 1024 * 1024 * 1024 * 1024
+    storage_pct = min(100, int((total_bytes / storage_limit * 100))) if total_bytes > 0 else 0
+
+    if total_bytes >= 1_099_511_627_776:
+        storage_used_str = f"{total_bytes / 1_099_511_627_776:.2f} TB"
+    elif total_bytes >= 1_073_741_824:
+        storage_used_str = f"{total_bytes / 1_073_741_824:.2f} GB"
+    elif total_bytes >= 1_048_576:
+        storage_used_str = f"{total_bytes / 1_048_576:.2f} MB"
+    else:
+        storage_used_str = f"{total_bytes / 1024:.2f} KB"
+
+    active_subs_change = get_weekly_change(Subscription.objects.filter(status='Active'), 'created_at')
+    # Free users change (users joined recently who don't have active subscriptions)
+    free_users_change = get_weekly_change(CustomUser.objects.filter(deleted_at__isnull=True).exclude(subscription__status='Active'), 'date_joined')
 
     context.update({
         "active_subs_str": f"{active_subs:,}",
         "free_users_str": f"{free_users:,}",
-        "storage_used_str": f"{storage_val:.2f} TB",
+        "storage_used_str": storage_used_str,
+        "active_subs_pct": active_subs_pct,
+        "free_users_pct": free_users_pct,
+        "storage_pct": storage_pct,
+        "active_subs_change": active_subs_change,
+        "free_users_change": free_users_change,
     })
 
     # Streaming Overview Chart.js Data (Streams and Listeners over time)
-    # Renders the wave line from the react code
-    now = timezone.now()
     labels = []
     streams_data = []
     listeners_data = []
     
-    base_streams = [500000, 580000, 620000, 590000, 680000, 650000, 720000]
-    base_listeners = [250000, 290000, 310000, 280000, 340000, 320000, 370000]
-
     for i in range(6, -1, -1):
         day = now - timedelta(days=i)
-        labels.append(f"May {12 + (6 - i)}")
-        streams_data.append(base_streams[6 - i] + db_songs_count * 1500)
-        listeners_data.append(base_listeners[6 - i] + db_users_count * 800)
+        day_start = day.replace(hour=0, minute=0, second=0, microsecond=0)
+        day_end = day.replace(hour=23, minute=59, second=59, microsecond=999999)
+        labels.append(day.strftime('%b %d'))
+        
+        day_streams = ListeningHistory.objects.filter(played_at__range=(day_start, day_end)).count()
+        day_listeners = ListeningHistory.objects.filter(played_at__range=(day_start, day_end)).values('user').distinct().count()
+        
+        streams_data.append(day_streams)
+        listeners_data.append(day_listeners)
 
     # User Growth Bar Chart Data (New users over time)
     user_growth_data = []
-    base_users = [1800, 2400, 2900, 2500, 3200, 2800, 3500]
-    for i in range(7):
-        user_growth_data.append(base_users[i] + db_users_count * 20)
+    for i in range(6, -1, -1):
+        day = now - timedelta(days=i)
+        day_start = day.replace(hour=0, minute=0, second=0, microsecond=0)
+        day_end = day.replace(hour=23, minute=59, second=59, microsecond=999999)
+        day_users = CustomUser.objects.filter(date_joined__range=(day_start, day_end)).count()
+        user_growth_data.append(day_users)
 
     context.update({
         "chart_labels": json.dumps(labels),
@@ -78,93 +167,101 @@ def dashboard_callback(request, context):
         "user_growth_data": json.dumps(user_growth_data),
     })
 
-    # Top Songs (Most streamed songs) matching the Lovable list exactly
-    top_songs = [
-        {"title": "Blinding Lights", "artist": "The Weeknd", "plays": "2.4M", "color": "#6c50e9"},
-        {"title": "Shape of You", "artist": "Ed Sheeran", "plays": "1.9M", "color": "#10B981"},
-        {"title": "Someone You Loved", "artist": "Lewis Capaldi", "plays": "1.7M", "color": "#3B82F6"},
-        {"title": "Sunflower", "artist": "Post Malone, Swae Lee", "plays": "1.5M", "color": "#F97316"},
-        {"title": "Stay", "artist": "The Kid LAROI, Justin Bieber", "plays": "1.3M", "color": "#fc4a93"}
-    ]
+    # Top Songs (Most streamed songs)
+    from django.db.models import Count
+    top_db_songs = Song.objects.filter(deleted_at__isnull=True).annotate(
+        plays_count=Count('history')
+    ).order_by('-plays_count')[:5]
 
-    # Integrate actual database songs in Top Songs if we have them
-    db_songs = Song.objects.select_related('artist').order_by('-id')[:3]
-    for idx, db_song in enumerate(db_songs):
-        if idx < len(top_songs):
-            # Calculate mock plays based on song ID
-            plays_count = 1.0 + (db_song.id * 0.1)
-            # Find artwork url
-            art_color = ["#6c50e9", "#10B981", "#3B82F6", "#F97316", "#fc4a93"][idx % 5]
-            top_songs[idx] = {
-                "title": db_song.title,
-                "artist": db_song.artist.name,
-                "plays": f"{plays_count:.1f}M",
-                "color": art_color,
-                "artwork": db_song.effective_artwork.url if db_song.effective_artwork else None
-            }
+    top_songs = []
+    colors = ["#6c50e9", "#10B981", "#3B82F6", "#F97316", "#fc4a93"]
+    for idx, song in enumerate(top_db_songs):
+        artwork_url = None
+        try:
+            if song.effective_artwork:
+                artwork_url = song.effective_artwork.url
+        except Exception:
+            pass
+            
+        top_songs.append({
+            "title": song.title,
+            "artist": song.artist.name,
+            "plays": format_stat_number(song.plays_count),
+            "color": colors[idx % 5],
+            "artwork": artwork_url
+        })
+
+    # Fallback to defaults if there are no songs with plays
+    if not top_songs:
+        default_songs = [
+            {"title": "Mokwaci", "artist": "Bala MJ", "plays": "0", "color": "#6c50e9"},
+            {"title": "Eganzuma", "artist": "Mahmud Mokwa", "plays": "0", "color": "#10B981"},
+            {"title": "Dabe Dabe", "artist": "Mahmud Mokwa", "plays": "0", "color": "#3B82F6"},
+        ]
+        # Try to use any database song first
+        any_songs = Song.objects.filter(deleted_at__isnull=True).select_related('artist')[:5]
+        for idx, song in enumerate(any_songs):
+            artwork_url = None
+            try:
+                if song.effective_artwork:
+                    artwork_url = song.effective_artwork.url
+            except Exception:
+                pass
+            top_songs.append({
+                "title": song.title,
+                "artist": song.artist.name,
+                "plays": "0",
+                "color": colors[idx % 5],
+                "artwork": artwork_url
+            })
+        # Pad up to 5 if needed
+        while len(top_songs) < 5 and len(default_songs) > 0:
+            top_songs.append(default_songs.pop(0))
 
     context["top_songs"] = top_songs
 
-    # Recent Songs Table matching Lovable's list
-    recent_songs_list = [
-        {"title": "Die For You", "artist": "The Weeknd", "album": "Starboy", "date": "May 18, 2024", "status": "Published", "status_class": "bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20"},
-        {"title": "Calm Down", "artist": "Rema", "album": "Rave & Roses", "date": "May 18, 2024", "status": "Published", "status_class": "bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20"},
-        {"title": "Flowers", "artist": "Miley Cyrus", "album": "Endless Summer", "date": "May 17, 2024", "status": "Published", "status_class": "bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20"},
-        {"title": "Anti-Hero", "artist": "Taylor Swift", "album": "Midnights", "date": "May 17, 2024", "status": "Published", "status_class": "bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20"},
-        {"title": "Creepin'", "artist": "Metro Boomin, The Weeknd", "album": "Heroes & Villains", "date": "May 16, 2024", "status": "Draft", "status_class": "bg-gray-100 text-gray-700 dark:bg-base-800 dark:text-gray-300 border border-gray-200 dark:border-base-700"},
-        {"title": "As It Was", "artist": "Harry Styles", "album": "Harry's House", "date": "May 16, 2024", "status": "Published", "status_class": "bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20"}
-    ]
-
-    # Integrate actual database songs at the top of the list
-    all_db_songs = Song.objects.select_related('artist', 'album').order_by('-id')[:4]
-    for idx, song in enumerate(all_db_songs):
-        if idx < len(recent_songs_list):
-            try:
-                artwork_url = song.effective_artwork.url if song.effective_artwork else None
-            except Exception:
-                artwork_url = None
-            recent_songs_list[idx] = {
-                "title": song.title,
-                "artist": song.artist.name,
-                "album": song.album.name if song.album else "Single",
-                "date": song.album.release_year if (song.album and song.album.release_year) else "Recently",
-                "status": "Published",
-                "status_class": "bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20",
-                "artwork": artwork_url
-            }
-
+    # Recent Songs Table
+    recent_db_songs = Song.objects.filter(deleted_at__isnull=True).select_related('artist', 'album').order_by('-id')[:6]
+    recent_songs_list = []
+    for song in recent_db_songs:
+        artwork_url = None
+        try:
+            if song.effective_artwork:
+                artwork_url = song.effective_artwork.url
+        except Exception:
+            pass
+        recent_songs_list.append({
+            "title": song.title,
+            "artist": song.artist.name,
+            "album": song.album.name if song.album else "Single",
+            "date": song.album.release_year if (song.album and song.album.release_year) else "Recently",
+            "status": "Published",
+            "status_class": "bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20",
+            "artwork": artwork_url
+        })
     context["recent_songs"] = recent_songs_list
 
-    # Recent Users Table matching Lovable's list
-    recent_users_list = [
-        {"name": "Jane Cooper", "email": "jane@example.com", "date": "May 18, 2024", "initials": "JC", "color": "linear-gradient(135deg, #6c50e9, #fc4a93)"},
-        {"name": "Cody Fisher", "email": "cody@example.com", "date": "May 18, 2024", "initials": "CF", "color": "linear-gradient(135deg, #3B82F6, #6c50e9)"},
-        {"name": "Esther Howard", "email": "esther@example.com", "date": "May 17, 2024", "initials": "EH", "color": "linear-gradient(135deg, #10B981, #3B82F6)"},
-        {"name": "Robert Fox", "email": "robert@example.com", "date": "May 17, 2024", "initials": "RF", "color": "linear-gradient(135deg, #F97316, #10B981)"},
-        {"name": "Wade Warren", "email": "wade@example.com", "date": "May 16, 2024", "initials": "WW", "color": "linear-gradient(135deg, #fc4a93, #F97316)"},
-        {"name": "Brooklyn Simmons", "email": "brooklyn@example.com", "date": "May 16, 2024", "initials": "BS", "color": "linear-gradient(135deg, #6c50e9, #3B82F6)"}
-    ]
-
-    # Integrate actual database users at the top
-    all_db_users = CustomUser.objects.filter(is_superuser=False).order_by('-date_joined')[:3]
-    for idx, user in enumerate(all_db_users):
-        if idx < len(recent_users_list):
-            user_name = user.get_full_name() or user.username
-            initials = "".join([n[0].upper() for n in user_name.split() if n])[:2] or user.username[:2].upper()
-            gradient = [
-                "linear-gradient(135deg, #6c50e9, #fc4a93)",
-                "linear-gradient(135deg, #3B82F6, #6c50e9)",
-                "linear-gradient(135deg, #10B981, #3B82F6)"
-            ][idx % 3]
-
-            recent_users_list[idx] = {
-                "name": user_name,
-                "email": user.email or f"{user.username}@example.com",
-                "date": user.date_joined.strftime("%b %d, %Y"),
-                "initials": initials,
-                "color": gradient
-            }
-
+    # Recent Users Table
+    recent_db_users = CustomUser.objects.filter(is_superuser=False, deleted_at__isnull=True).order_by('-date_joined')[:6]
+    recent_users_list = []
+    for idx, user in enumerate(recent_db_users):
+        user_name = user.get_full_name() or user.username
+        initials = "".join([n[0].upper() for n in user_name.split() if n])[:2] or user.username[:2].upper()
+        gradient = [
+            "linear-gradient(135deg, #6c50e9, #fc4a93)",
+            "linear-gradient(135deg, #3B82F6, #6c50e9)",
+            "linear-gradient(135deg, #10B981, #3B82F6)",
+            "linear-gradient(135deg, #F97316, #10B981)",
+            "linear-gradient(135deg, #fc4a93, #F97316)",
+            "linear-gradient(135deg, #6c50e9, #3B82F6)"
+        ][idx % 6]
+        recent_users_list.append({
+            "name": user_name,
+            "email": user.email or f"{user.username}@example.com",
+            "date": user.date_joined.strftime("%b %d, %Y"),
+            "initials": initials,
+            "color": gradient
+        })
     context["recent_users"] = recent_users_list
 
     return context

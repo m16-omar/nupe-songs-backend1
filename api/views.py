@@ -1228,3 +1228,63 @@ def load_fixtures_view(request):
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 
+import csv
+from django.http import HttpResponse
+
+@staff_member_required
+def admin_export_report_view(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="nupe_songs_platform_report.csv"'
+    
+    writer = csv.writer(response)
+    
+    # 1. Summary Stats
+    writer.writerow(['NUPE SONGS PLATFORM REPORT'])
+    writer.writerow(['Generated on', timezone.now().strftime('%Y-%m-%d %H:%M:%S')])
+    writer.writerow([])
+    
+    db_users_count = User.objects.filter(deleted_at__isnull=True).count()
+    db_songs_count = Song.objects.filter(deleted_at__isnull=True).count()
+    db_streams_count = ListeningHistory.objects.count()
+    db_downloads_count = DownloadLog.objects.count()
+    active_subs = Subscription.objects.filter(status="Active").count()
+    revenue_val = Subscription.objects.filter(status="Active").aggregate(total=Count('id'))['total'] or 0.0 # Calculate based on subs count as revenue sum fallback
+    
+    # Try actual pricing sum
+    try:
+        price_sum = Subscription.objects.filter(status="Active").aggregate(total=models.Sum('price'))['total']
+        if price_sum is not None:
+            revenue_val = price_sum
+    except Exception:
+        pass
+    
+    writer.writerow(['METRIC', 'VALUE'])
+    writer.writerow(['Total Registered Users', db_users_count])
+    writer.writerow(['Total Active Songs', db_songs_count])
+    writer.writerow(['Total Plays / Streams', db_streams_count])
+    writer.writerow(['Total Download Actions', db_downloads_count])
+    writer.writerow(['Active Premium Subscriptions', active_subs])
+    writer.writerow(['Monthly Estimated Revenue', f"${revenue_val:,.2f}"])
+    writer.writerow([])
+    
+    # 2. Top Songs
+    writer.writerow(['TOP STREAMED SONGS'])
+    writer.writerow(['Rank', 'Title', 'Artist', 'Streams'])
+    top_db_songs = Song.objects.filter(deleted_at__isnull=True).annotate(
+        plays_count=Count('history')
+    ).order_by('-plays_count')[:10]
+    for idx, song in enumerate(top_db_songs):
+        writer.writerow([idx + 1, song.title, song.artist.name, song.plays_count])
+    writer.writerow([])
+    
+    # 3. Recent Users
+    writer.writerow(['RECENT REGISTERED USERS'])
+    writer.writerow(['Name', 'Email', 'Date Joined'])
+    recent_users = User.objects.filter(is_superuser=False, deleted_at__isnull=True).order_by('-date_joined')[:10]
+    for user in recent_users:
+        writer.writerow([user.get_full_name() or user.username, user.email, user.date_joined.strftime('%Y-%m-%d %H:%M:%S')])
+        
+    return response
+
+
+

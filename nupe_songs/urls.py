@@ -5,7 +5,7 @@ from django.views.static import serve
 from api.views import (
     landing_view, admin_lyrics_view, admin_favorites_view,
     admin_analytics_view, admin_settings_view, admin_backups_view,
-    admin_trash_view
+    admin_trash_view, admin_export_report_view
 )
 
 urlpatterns = [
@@ -16,6 +16,7 @@ urlpatterns = [
     path('admin/settings-page/', admin_settings_view, name='admin_settings'),
     path('admin/backups-page/', admin_backups_view, name='admin_backups'),
     path('admin/trash-page/', admin_trash_view, name='admin_trash'),
+    path('admin/export-report/', admin_export_report_view, name='admin_export_report'),
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
 ]
