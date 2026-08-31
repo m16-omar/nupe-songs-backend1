@@ -9,17 +9,21 @@ python manage.py collectstatic --no-input
 python manage.py migrate
 
 
-# Create superuser automatically from environment variables (if not exists)
+# Create superuser automatically or seed database if completely empty
 python manage.py shell << 'PYEOF'
 from django.contrib.auth import get_user_model
-import os
+from django.core.management import call_command
+import sys
+
 User = get_user_model()
-username = os.environ.get('DJANGO_SUPERUSER_USERNAME', 'admin')
-email = os.environ.get('DJANGO_SUPERUSER_EMAIL', 'admin@example.com')
-password = os.environ.get('DJANGO_SUPERUSER_PASSWORD')
-if password and not User.objects.filter(username=username).exists():
-    User.objects.create_superuser(username=username, email=email, password=password)
-    print(f"Superuser '{username}' created successfully.")
+if User.objects.count() == 0:
+    print("Brand new database detected. Running seed command to populate catalog and admin user...")
+    try:
+        call_command('seed')
+        print("Database seeded successfully.")
+    except Exception as e:
+        print(f"Error seeding database: {e}")
+        sys.exit(1)
 else:
-    print(f"Superuser '{username}' already exists or no password set, skipping.")
+    print("Database already populated. Skipping seed.")
 PYEOF
