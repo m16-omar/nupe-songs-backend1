@@ -1,5 +1,35 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.conf import settings
+from django.core.files.storage import Storage, default_storage
+from django.utils.deconstruct import deconstructible
+
+@deconstructible
+class AudioMediaStorage(Storage):
+    @property
+    def target_storage(self):
+        if getattr(settings, 'USE_CLOUDINARY', False):
+            from cloudinary_storage.storage import RawMediaCloudinaryStorage
+            return RawMediaCloudinaryStorage()
+        return default_storage
+
+    def _open(self, name, mode='rb'):
+        return self.target_storage._open(name, mode)
+
+    def _save(self, name, content):
+        return self.target_storage._save(name, content)
+
+    def delete(self, name):
+        return self.target_storage.delete(name)
+
+    def exists(self, name):
+        return self.target_storage.exists(name)
+
+    def url(self, name):
+        return self.target_storage.url(name)
+
+    def size(self, name):
+        return self.target_storage.size(name)
 
 class Artist(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -31,7 +61,7 @@ class Song(models.Model):
     artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name="songs")
     album = models.ForeignKey(Album, on_delete=models.SET_NULL, null=True, blank=True, related_name="songs")
     genre = models.ForeignKey(Genre, on_delete=models.SET_NULL, null=True, blank=True, related_name="songs")
-    audio_file = models.FileField(upload_to='songs/')
+    audio_file = models.FileField(upload_to='songs/', storage=AudioMediaStorage())
     artwork = models.ImageField(upload_to='songs/artwork/', null=True, blank=True)
     duration_ms = models.IntegerField(default=0, blank=True, null=True)
     lyrics = models.TextField(blank=True, null=True, default='')

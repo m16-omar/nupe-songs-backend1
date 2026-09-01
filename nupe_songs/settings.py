@@ -190,26 +190,26 @@ SIMPLE_JWT = {
 }
 
 # Cloudinary Configuration for media file storage (images + audio)
+CLOUDINARY_CLOUD_NAME = env('CLOUDINARY_CLOUD_NAME', default='dnexiputv')
+CLOUDINARY_API_KEY = env('CLOUDINARY_API_KEY', default='214525292948919')
+CLOUDINARY_API_SECRET = env('CLOUDINARY_API_SECRET', default='0o5bpGiwNEFa0BdtakMFcsYQOuY')
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': CLOUDINARY_CLOUD_NAME,
+    'API_KEY': CLOUDINARY_API_KEY,
+    'API_SECRET': CLOUDINARY_API_SECRET,
+}
+
 USE_CLOUDINARY = env.bool('USE_CLOUDINARY', default=False)
 
 if USE_CLOUDINARY:
     import cloudinary
-    CLOUDINARY_CLOUD_NAME = env('CLOUDINARY_CLOUD_NAME')
-    CLOUDINARY_API_KEY = env('CLOUDINARY_API_KEY')
-    CLOUDINARY_API_SECRET = env('CLOUDINARY_API_SECRET')
-
     cloudinary.config(
         cloud_name=CLOUDINARY_CLOUD_NAME,
         api_key=CLOUDINARY_API_KEY,
         api_secret=CLOUDINARY_API_SECRET,
         secure=True,
     )
-
-    CLOUDINARY_STORAGE = {
-        'CLOUD_NAME': CLOUDINARY_CLOUD_NAME,
-        'API_KEY': CLOUDINARY_API_KEY,
-        'API_SECRET': CLOUDINARY_API_SECRET,
-    }
 
     STORAGES = {
         "default": {
