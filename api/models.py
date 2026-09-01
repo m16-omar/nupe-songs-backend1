@@ -33,8 +33,8 @@ class Song(models.Model):
     genre = models.ForeignKey(Genre, on_delete=models.SET_NULL, null=True, blank=True, related_name="songs")
     audio_file = models.FileField(upload_to='songs/')
     artwork = models.ImageField(upload_to='songs/artwork/', null=True, blank=True)
-    duration_ms = models.IntegerField()
-    lyrics = models.TextField(blank=True)
+    duration_ms = models.IntegerField(default=0, blank=True, null=True)
+    lyrics = models.TextField(blank=True, null=True, default='')
     deleted_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):

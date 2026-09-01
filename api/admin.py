@@ -48,8 +48,8 @@ class AlbumAdmin(ActionsMixin, ModelAdmin):
 class SongForm(forms.ModelForm):
     duration_formatted = forms.CharField(
         label="Duration (MM:SS)",
-        required=True,
-        help_text="Enter duration in MM:SS format (e.g., 02:40 or 4:00)",
+        required=False,
+        help_text="Optional: Enter duration in MM:SS format (e.g., 02:40 or 4:00)",
         widget=forms.TextInput(attrs={'placeholder': 'MM:SS (e.g., 02:40)'})
     )
 
@@ -60,16 +60,20 @@ class SongForm(forms.ModelForm):
         widgets = {
             'lyrics': Textarea(
                 attrs={
-                    'rows': 20,
+                    'rows': 15,
                     'cols': 90,
                     'style': 'font-family: monospace; font-size: 14px;',
-                    'placeholder': 'Paste LRC formatted lyrics here, e.g.,\n[00:04.00] Dabe Dabe, egi Nupe\n[00:08.50] ...'
+                    'placeholder': 'Optional: Paste LRC formatted lyrics here, e.g.,\n[00:04.00] Dabe Dabe, egi Nupe\n[00:08.50] ...'
                 }
             )
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if 'lyrics' in self.fields:
+            self.fields['lyrics'].required = False
+        if 'duration_formatted' in self.fields:
+            self.fields['duration_formatted'].required = False
         if self.instance and self.instance.pk and self.instance.duration_ms:
             total_seconds = self.instance.duration_ms // 1000
             minutes = total_seconds // 60
@@ -78,8 +82,8 @@ class SongForm(forms.ModelForm):
 
     def clean_duration_formatted(self):
         data = self.cleaned_data.get('duration_formatted')
-        if not data:
-            raise forms.ValidationError("Duration is required.")
+        if not data or not data.strip():
+            return 0
         
         parts = data.strip().split(':')
         if len(parts) == 2:
@@ -112,7 +116,10 @@ class SongForm(forms.ModelForm):
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-        instance.duration_ms = self.cleaned_data.get('duration_formatted')
+        duration_val = self.cleaned_data.get('duration_formatted')
+        instance.duration_ms = duration_val if duration_val is not None else 0
+        if not instance.lyrics:
+            instance.lyrics = ''
         if commit:
             instance.save()
             self.save_m2m()
